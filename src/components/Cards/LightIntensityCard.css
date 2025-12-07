@@ -1,0 +1,10 @@
+.light-intensity-card {
+  background: linear-gradient(135deg, #fff 0%, #fffef0 100%);
+  transition: all 0.4s ease;
+}
+
+.light-intensity-card:hover {
+  background: linear-gradient(135deg, rgba(255, 213, 79, 0.08) 0%, #ffffff 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(255, 213, 79, 0.15);
+}

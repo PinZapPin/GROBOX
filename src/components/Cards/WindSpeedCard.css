@@ -1,0 +1,55 @@
+.wind-speed-card {
+  background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.wind-lines {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.wind-lines::before,
+.wind-lines::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #87ceeb, transparent);
+  animation: windFlow 2s linear infinite;
+}
+
+.wind-lines::before {
+  top: 30%;
+}
+
+.wind-lines::after {
+  top: 60%;
+  animation-delay: 1s;
+}
+
+.wind-speed-card:hover {
+  background: linear-gradient(135deg, rgba(135, 206, 235, 0.08) 0%, #ffffff 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(135, 206, 235, 0.15);
+}
+
+.wind-speed-card:hover .wind-lines {
+  opacity: 0.6;
+}
+
+@keyframes windFlow {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

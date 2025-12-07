@@ -1,0 +1,77 @@
+.circular-gauge-card {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.4s ease;
+}
+
+.circular-gauge-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.gauge-container {
+  position: relative;
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gauge-svg {
+  transform: scale(2);
+  transition: transform 0.3s ease;
+}
+
+.circular-gauge-card:hover .gauge-svg {
+  transform: scale(2.05);
+}
+
+.gauge-progress {
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.gauge-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.gauge-percentage {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.gauge-unit {
+  font-size: 18px;
+  font-weight: 500;
+  color: #7f8c8d;
+  margin-left: 2px;
+}
+
+.gauge-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between; /* Title kiri - icon kanan */
+  align-items: center;
+  padding: 10px 14px;
+  box-sizing: border-box;
+}
+
+.gauge-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+  text-align: left;
+}
+
+.gauge-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}

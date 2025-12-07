@@ -1,0 +1,149 @@
+.dashboard-page {
+  flex: 1;
+  height: 100vh;
+  overflow: hidden;
+  background-image: url('/assets/background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 20px 30px;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-header {
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.dashboard-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 8px 0;
+}
+
+.dashboard-subtitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #7f8c8d;
+  margin: 0;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  font-size: 18px;
+  color: #7f8c8d;
+}
+
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.dashboard-content {
+  display: flex;
+  gap: 25px;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.left-section {
+  flex: 0 0 33.33%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+  padding-top: 40px;
+}
+
+.right-section {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  grid-template-rows: minmax(0, 0.6fr) minmax(0, 0.9fr) minmax(0, 1.3fr) minmax(0, 1.3fr);
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Specific grid layouts for cards */
+.cards-grid > :nth-child(1),
+.cards-grid > :nth-child(2),
+.cards-grid > :nth-child(3) {
+  /* Row 1: Temperature, Wind Speed, Light Intensity */
+  grid-column: span 1;
+}
+
+.cards-grid > :nth-child(4),
+.cards-grid > :nth-child(5),
+.cards-grid > :nth-child(6) {
+  /* Row 2: Air Humidity, Soil Moisture, Water Tank */
+  grid-column: span 1;
+}
+
+.cards-grid > :nth-child(7) {
+  /* Row 3: Lux History Chart - full width */
+  grid-column: span 3;
+}
+
+.cards-grid > :nth-child(8) {
+  /* Row 4: RPM History Chart - full width */
+  grid-column: span 3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+  }
+  
+  .cards-grid > :nth-child(7),
+  .cards-grid > :nth-child(8) {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 1100px) {
+  .dashboard-content {
+    flex-direction: column;
+  }
+  
+  .left-section {
+    width: 100%;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 20px;
+  }
+  
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .cards-grid > :nth-child(n) {
+    grid-column: span 1;
+  }
+}

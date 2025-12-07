@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { LuxDataPoint } from '../../services/dummyData';
+import images from '../../assets/images';
 import './LuxHistoryChart.css';
 
 interface LuxHistoryChartProps {
@@ -47,7 +48,7 @@ const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data }) => {
       <div className="card-header">
         <h3 className="card-title">Light Intensity History</h3>
         <div className="card-icon">
-          <img src="/assets/frame/lightIcon.png" alt="Chart" />
+          <img src={images.frame.lightIcon} alt="Chart" />
         </div>
       </div>
       <div className="chart-legend">

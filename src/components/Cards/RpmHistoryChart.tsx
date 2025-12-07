@@ -1,6 +1,7 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { RpmDataPoint } from '../../services/dummyData';
+import images from '../../assets/images';
 import './RpmHistoryChart.css';
 
 interface RpmHistoryChartProps {
@@ -71,7 +72,7 @@ const RpmHistoryChart: React.FC<RpmHistoryChartProps> = ({ data, isLoading, erro
       <div className="card-header">
         <h3 className="card-title">Fan RPM History</h3>
         <div className="card-icon">
-          <img src="/assets/frame/fanIcon.png" alt="Fan" />
+          <img src={images.frame.fanIcon} alt="Fan" />
         </div>
       </div>
       

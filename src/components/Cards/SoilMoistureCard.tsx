@@ -1,4 +1,5 @@
 import React from 'react';
+import images from '../../assets/images';
 import CircularGauge from './CircularGauge';
 
 interface SoilMoistureCardProps {
@@ -11,7 +12,7 @@ const SoilMoistureCard: React.FC<SoilMoistureCardProps> = ({ value }) => {
       value={value}
       color="#6b8e23"
       title="Soil Moisture"
-      iconSrc="/assets/frame/soilmoistureIcon.png"
+      iconSrc={images.frame.soilmoistureIcon}
     />
   );
 };

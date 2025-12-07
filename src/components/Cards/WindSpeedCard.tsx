@@ -1,4 +1,5 @@
 import React from 'react';
+import images from '../../assets/images';
 import './WindSpeedCard.css';
 
 interface WindSpeedCardProps {
@@ -11,7 +12,7 @@ const WindSpeedCard: React.FC<WindSpeedCardProps> = ({ value }) => {
       <div className="card-header">
         <h3 className="card-title">Wind Speed</h3>
         <div className="card-icon">
-          <img src="/assets/frame/windIcon.png" alt="Wind" />
+          <img src={images.frame.windIcon} alt="Wind" />
         </div>
       </div>
       <div className="card-value-container">

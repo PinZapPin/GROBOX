@@ -1,4 +1,5 @@
 import React from 'react';
+import images from '../../assets/images';
 import './LightIntensityCard.css';
 
 interface LightIntensityCardProps {
@@ -11,7 +12,7 @@ const LightIntensityCard: React.FC<LightIntensityCardProps> = ({ value }) => {
       <div className="card-header">
         <h3 className="card-title">Light Intensity</h3>
         <div className="card-icon">
-          <img src="/assets/frame/lightIcon.png" alt="Light" />
+          <img src={images.frame.lightIcon} alt="Light" />
         </div>
       </div>
       <div className="card-value-container">

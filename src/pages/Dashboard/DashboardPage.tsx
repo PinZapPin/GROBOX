@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDashboard } from '../../context/DashboardContext';
+import images from '../../assets/images';
 import PlantInfo from '../../components/PlantInfo/PlantInfo';
 import TemperatureCard from '../../components/Cards/TemperatureCard';
 import WindSpeedCard from '../../components/Cards/WindSpeedCard';
@@ -16,7 +17,7 @@ const DashboardPage: React.FC = () => {
 
   if (isLoading && !sensorData) {
     return (
-      <div className="dashboard-page">
+      <div className="dashboard-page" style={{ backgroundImage: `url(${images.background})` }}>
         <div className="loading-container">
           <p>Loading dashboard...</p>
         </div>
@@ -25,7 +26,7 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="dashboard-page">
+    <div className="dashboard-page" style={{ backgroundImage: `url(${images.background})` }}>
       <header className="dashboard-header">
         <h1 className="dashboard-title">Judul Proyek Ini</h1>
         <p className="dashboard-subtitle">Dashboard</p>

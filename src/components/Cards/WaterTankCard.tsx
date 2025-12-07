@@ -1,4 +1,5 @@
 import React from 'react';
+import images from '../../assets/images';
 import './WaterTankCard.css';
 
 interface WaterTankCardProps {
@@ -11,7 +12,7 @@ const WaterTankCard: React.FC<WaterTankCardProps> = ({ value }) => {
       <div className="gauge-header">
         <h3 className="gauge-title">Water Tank</h3>
         <div className="gauge-icon">
-          <img src="/assets/frame/watercapIcon.png" alt="Water Tank" />
+          <img src={images.frame.watercapIcon} alt="Water Tank" />
         </div>
       </div>
       <div className="tank-container">

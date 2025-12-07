@@ -1,4 +1,5 @@
 import React from 'react';
+import images from '../../assets/images';
 import './TemperatureCard.css';
 
 interface TemperatureCardProps {
@@ -11,7 +12,7 @@ const TemperatureCard: React.FC<TemperatureCardProps> = ({ value }) => {
       <div className="card-header">
         <h3 className="card-title">Temperature</h3>
         <div className="card-icon">
-          <img src="/assets/frame/tempIcon.png" alt="Temperature" />
+          <img src={images.frame.tempIcon} alt="Temperature" />
         </div>
       </div>
       <div className="card-value-container">

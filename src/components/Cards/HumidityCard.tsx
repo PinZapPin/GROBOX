@@ -1,4 +1,5 @@
 import React from 'react';
+import images from '../../assets/images';
 import CircularGauge from './CircularGauge';
 
 interface HumidityCardProps {
@@ -11,7 +12,7 @@ const HumidityCard: React.FC<HumidityCardProps> = ({ value }) => {
       value={value}
       color="#3498db"
       title="Air Humidity"
-      iconSrc="/assets/frame/humidityIcon.png"
+      iconSrc={images.frame.humidityIcon}
     />
   );
 };

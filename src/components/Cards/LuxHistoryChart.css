@@ -1,7 +1,7 @@
 .lux-history-chart {
   background: linear-gradient(135deg, #fff 0%, #fffef0 100%);
   transition: all 0.4s ease;
-  min-height: 280px;
+  min-height: 300px;
   display: flex;
   flex-direction: column;
 }
@@ -40,6 +40,37 @@
 .chart-container {
   width: 100%;
   flex: 1;
-  min-height: 180px;
+  min-height: 200px;
   padding: 0 10px 15px 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .lux-history-chart {
+    min-height: 280px;
+  }
+
+  .chart-container {
+    min-height: 180px;
+    padding: 0 5px 10px 5px;
+  }
+
+  .legend-label {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lux-history-chart {
+    min-height: 250px;
+  }
+
+  .chart-container {
+    min-height: 160px;
+  }
+
+  .chart-legend {
+    gap: 15px;
+    margin: 8px 15px;
+  }
 }

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "homepage": "https://github.com/PinZapPin/GROBOX",
+  "homepage": "https://pinzappin.github.io/GROBOX",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

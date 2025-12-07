@@ -1,123 +1,317 @@
 import React, { useState } from 'react';
+import { getDatabase, ref, set } from 'firebase/database';
+import { initializeApp } from 'firebase/app';
+import { useDashboard } from '../../context/DashboardContext';
+import images from '../../assets/images';
 import './ManualControlPage.css';
 
+// Firebase config (sama seperti DashboardContext)
+const firebaseConfig = {
+  apiKey: 'AIzaSyBRQuZFv7qBlftLINSFxgGeMo4j2uYAwtQ',
+  authDomain: 'despro-43cdc.firebaseapp.com',
+  databaseURL: 'https://despro-43cdc-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: 'despro-43cdc',
+  storageBucket: 'despro-43cdc.firebasestorage.app',
+  messagingSenderId: '1022318213486',
+  appId: '1:1022318213486:web:5e7f4f4307bda6230f697f',
+  measurementId: 'G-N2YW51X1Q9',
+};
+
+const app = initializeApp(firebaseConfig, 'manual-control-app');
+const rtdb = getDatabase(app);
+
 const ManualControlPage: React.FC = () => {
-  // Fan Control State
-  const [fanMode, setFanMode] = useState<'auto' | 'manual'>('auto');
-  const [fanDuty, setFanDuty] = useState(50);
-
-  // Light Control State
-  const [lightPower, setLightPower] = useState(false);
-  const [lightAutoIntensity, setLightAutoIntensity] = useState(70);
-  const [lightManualIntensity, setLightManualIntensity] = useState(50);
-
-  const handleSaveFan = () => {
-    console.log('Saving fan settings:', { fanMode, fanDuty });
-    alert('Fan settings saved!');
+  // Get RPM data from DashboardContext
+  const { rpmHistory } = useDashboard();
+  
+  const getIndividualFanRpms = (): { fan1: number; fan2: number; fan3: number; fan4: number } => {
+    if (!rpmHistory || rpmHistory.length === 0) {
+      return { fan1: 0, fan2: 0, fan3: 0, fan4: 0 };
+    }
+    const latestData = rpmHistory[rpmHistory.length - 1];
+    return {
+      fan1: Math.round(latestData.fan1),
+      fan2: Math.round(latestData.fan2),
+      fan3: Math.round(latestData.fan3),
+      fan4: Math.round(latestData.fan4),
+    };
   };
 
-  const handleSaveLight = () => {
-    console.log('Saving light settings:', { 
-      lightPower, 
-      lightAutoIntensity, 
-      lightManualIntensity 
-    });
-    alert('Light settings saved!');
+  const fanRpms = getIndividualFanRpms();
+
+  // Fan Control State
+  const [fanAutoMode, setFanAutoMode] = useState<boolean>(true);
+  const [fanDuty, setFanDuty] = useState<number>(50);
+
+  // Light Control State
+  const [lightOn, setLightOn] = useState<boolean>(false);
+  const [lightAutoMode, setLightAutoMode] = useState<boolean>(true);
+  const [lightDuty, setLightDuty] = useState<number>(50);
+
+  const handleSaveFan = async () => {
+    try {
+      await set(ref(rtdb, 'status/group30/autoControl'), fanAutoMode);
+      if (!fanAutoMode) {
+        await set(ref(rtdb, 'status/group30/duty'), fanDuty);
+      }
+      console.log('✓ Fan settings saved:', { autoControl: fanAutoMode, duty: fanDuty });
+      alert('Fan settings saved to Firebase!');
+    } catch (error) {
+      console.error('❌ Error saving fan settings:', error);
+      alert('Failed to save fan settings');
+    }
+  };
+
+  const handleSaveLight = async () => {
+    try {
+      await set(ref(rtdb, 'status/group3/lampStatus'), lightOn);
+      if (lightOn) {
+        await set(ref(rtdb, 'status/group3/autoControl'), lightAutoMode);
+        if (!lightAutoMode) {
+          await set(ref(rtdb, 'status/group3/duty'), lightDuty);
+        }
+      }
+      console.log('✓ Light settings saved:', { 
+        lampStatus: lightOn, 
+        autoControl: lightAutoMode, 
+        duty: lightDuty 
+      });
+      alert('Light settings saved to Firebase!');
+    } catch (error) {
+      console.error('❌ Error saving light settings:', error);
+      alert('Failed to save light settings');
+    }
   };
 
   return (
-    <div className="manual-control-page">
+    <div className="manual-control-page" style={{ backgroundImage: `url(${images.background})` }}>
       <header className="page-header">
         <h1 className="page-title">Judul Proyek Ini</h1>
         <p className="page-subtitle">Manual Control</p>
       </header>
 
       <div className="control-container">
-        {/* Fan Control Section */}
-        <div className="control-section">
-          <h2 className="section-title">Fan Control</h2>
-          
-          <div className="mode-selector">
-            <button
-              className={`mode-button ${fanMode === 'auto' ? 'active' : ''}`}
-              onClick={() => setFanMode('auto')}
-            >
-              Auto Control
-            </button>
-            <button
-              className={`mode-button ${fanMode === 'manual' ? 'active' : ''}`}
-              onClick={() => setFanMode('manual')}
-            >
-              Manual Control
-            </button>
+        {/* Fan Control Card */}
+        <div className="control-card">
+          <div className="card-header-row">
+            <div className="card-title-wrapper">
+              <h2 className="card-title">Fan Control</h2>
+              <div className="card-icon">
+                <img src={images.frame.fanIcon} alt="Fan" />
+              </div>
+            </div>
+            <div className="mode-switch">
+              <button
+                className={`switch-option ${fanAutoMode ? 'active' : ''}`}
+                onClick={() => setFanAutoMode(true)}
+              >
+                auto
+              </button>
+              <button
+                className={`switch-option ${!fanAutoMode ? 'active' : ''}`}
+                onClick={() => setFanAutoMode(false)}
+              >
+                manual
+              </button>
+            </div>
           </div>
 
-          <div className="control-item">
-            <label className="control-label">Fan Duty Cycle (All Fans)</label>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={fanDuty}
-              onChange={(e) => setFanDuty(Number(e.target.value))}
-              className="control-slider"
-              disabled={fanMode === 'auto'}
-            />
-            <span className="control-value">{fanDuty}%</span>
+          <div className="card-center">
+            <div className="four-fans-grid">
+              {/* Fan 1 */}
+              <div className="single-fan-display">
+                <div className="fan-container spinning">
+                  <div className="fan-blades-small">
+                    {Array.from({ length: 7 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="fan-blade-small"
+                        style={{ 
+                          transform: `rotate(${i * 51.43}deg)`
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div className="fan-ring" />
+                  <div className="fan-rpm-small">
+                    <span className="rpm-value-small">{fanRpms.fan1}</span>
+                  </div>
+                </div>
+                <span className="fan-label">Fan 1</span>
+              </div>
+
+              {/* Fan 2 */}
+              <div className="single-fan-display">
+                <div className="fan-container spinning">
+                  <div className="fan-blades-small">
+                    {Array.from({ length: 7 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="fan-blade-small"
+                        style={{ 
+                          transform: `rotate(${i * 51.43}deg)`
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div className="fan-ring" />
+                  <div className="fan-rpm-small">
+                    <span className="rpm-value-small">{fanRpms.fan2}</span>
+                  </div>
+                </div>
+                <span className="fan-label">Fan 2</span>
+              </div>
+
+              {/* Fan 3 */}
+              <div className="single-fan-display">
+                <div className="fan-container spinning">
+                  <div className="fan-blades-small">
+                    {Array.from({ length: 7 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="fan-blade-small"
+                        style={{ 
+                          transform: `rotate(${i * 51.43}deg)`
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div className="fan-ring" />
+                  <div className="fan-rpm-small">
+                    <span className="rpm-value-small">{fanRpms.fan3}</span>
+                  </div>
+                </div>
+                <span className="fan-label">Fan 3</span>
+              </div>
+
+              {/* Fan 4 */}
+              <div className="single-fan-display">
+                <div className="fan-container spinning">
+                  <div className="fan-blades-small">
+                    {Array.from({ length: 7 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="fan-blade-small"
+                        style={{ 
+                          transform: `rotate(${i * 51.43}deg)`
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div className="fan-ring" />
+                  <div className="fan-rpm-small">
+                    <span className="rpm-value-small">{fanRpms.fan4}</span>
+                  </div>
+                </div>
+                <span className="fan-label">Fan 4</span>
+              </div>
+            </div>
           </div>
 
-          <button className="save-button" onClick={handleSaveFan}>
-            Save Fan Settings
-          </button>
+          <div className="card-controls">
+            <div className="slider-section">
+              <label className="slider-label">Duty 0% – 100%</label>
+              <div className="slider-container">
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={fanDuty}
+                  onChange={(e) => setFanDuty(Number(e.target.value))}
+                  className="duty-slider"
+                  disabled={fanAutoMode}
+                  style={{ opacity: fanAutoMode ? 0.4 : 1 }}
+                />
+                <span className="slider-value">{fanDuty}%</span>
+              </div>
+            </div>
+            <button className="save-button-large" onClick={handleSaveFan}>
+              Save
+            </button>
+          </div>
         </div>
 
-        {/* Light Control Section */}
-        <div className="control-section">
-          <h2 className="section-title">Light Control</h2>
-          
-          <div className="toggle-item">
-            <span className="toggle-label">Power</span>
-            <button
-              className={`toggle-button ${lightPower ? 'active' : ''}`}
-              onClick={() => setLightPower(!lightPower)}
-            >
-              {lightPower ? 'ON' : 'OFF'}
-            </button>
+        {/* Light Control Card */}
+        <div className="control-card">
+          {/* Title on left, switches on right */}
+          <div className="light-title-row">
+            <div className="card-title-wrapper">
+              <h2 className="card-title">Light Control</h2>
+              <div className="card-icon">
+                <img src={images.frame.lightIcon} alt="Light" />
+              </div>
+            </div>
+            
+            <div className="light-switches-right">
+              <div className="power-toggle-container">
+                <div 
+                  className={`power-toggle ${lightOn ? 'on' : 'off'}`}
+                  onClick={() => setLightOn(!lightOn)}
+                >
+                  <div className="toggle-track">
+                    <span className={`toggle-label-on ${lightOn ? 'active' : ''}`}>On</span>
+                    <span className={`toggle-label-off ${!lightOn ? 'active' : ''}`}>Off</span>
+                  </div>
+                  <div className="toggle-thumb" />
+                </div>
+              </div>
+              
+              <div 
+                className="mode-switch" 
+                style={{ opacity: lightOn ? 1 : 0.4, pointerEvents: lightOn ? 'auto' : 'none' }}
+              >
+                <button
+                  className={`switch-option ${lightAutoMode ? 'active' : ''}`}
+                  onClick={() => setLightAutoMode(true)}
+                  disabled={!lightOn}
+                >
+                  auto
+                </button>
+                <button
+                  className={`switch-option ${!lightAutoMode ? 'active' : ''}`}
+                  onClick={() => setLightAutoMode(false)}
+                  disabled={!lightOn}
+                >
+                  manual
+                </button>
+              </div>
+            </div>
           </div>
 
-          {lightPower && (
-            <>
-              <div className="control-item">
-                <label className="control-label">Auto Mode Intensity</label>
+          <div className="card-center">
+            <div 
+              className="light-indicator"
+              style={{ 
+                backgroundColor: lightOn ? '#f4e04d' : '#d0d0d0',
+                opacity: lightOn ? 1 : 0.5
+              }}
+            />
+          </div>
+
+          <div className="card-controls">
+            <div className="slider-section">
+              <label className="slider-label">PWM 0 – 255</label>
+              <div className="slider-container">
                 <input
                   type="range"
                   min="0"
-                  max="100"
-                  value={lightAutoIntensity}
-                  onChange={(e) => setLightAutoIntensity(Number(e.target.value))}
-                  className="control-slider"
+                  max="255"
+                  value={lightDuty}
+                  onChange={(e) => setLightDuty(Number(e.target.value))}
+                  className="duty-slider"
+                  disabled={!lightOn || lightAutoMode}
+                  style={{ opacity: (!lightOn || lightAutoMode) ? 0.4 : 1 }}
                 />
-                <span className="control-value">{lightAutoIntensity}%</span>
+                <span className="slider-value">{lightDuty}</span>
               </div>
-
-              <div className="control-item">
-                <label className="control-label">Manual Mode Intensity</label>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={lightManualIntensity}
-                  onChange={(e) => setLightManualIntensity(Number(e.target.value))}
-                  className="control-slider"
-                />
-                <span className="control-value">{lightManualIntensity}%</span>
-              </div>
-            </>
-          )}
-
-          <button className="save-button" onClick={handleSaveLight}>
-            Save Light Settings
-          </button>
+            </div>
+            <button 
+              className="save-button-large" 
+              onClick={handleSaveLight}
+            >
+              Save
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -4,9 +4,10 @@ import './TemperatureCard.css';
 
 interface TemperatureCardProps {
   value: number;
+  isConnected?: boolean;
 }
 
-const TemperatureCard: React.FC<TemperatureCardProps> = ({ value }) => {
+const TemperatureCard: React.FC<TemperatureCardProps> = ({ value, isConnected = false }) => {
   return (
     <div className="temperature-card sensor-card">
       <div className="card-header">
@@ -16,8 +17,14 @@ const TemperatureCard: React.FC<TemperatureCardProps> = ({ value }) => {
         </div>
       </div>
       <div className="card-value-container">
-        <span className="card-value">{value.toFixed(1)}</span>
-        <span className="card-unit">°C</span>
+        {isConnected ? (
+          <>
+            <span className="card-value">{value.toFixed(1)}</span>
+            <span className="card-unit">°C</span>
+          </>
+        ) : (
+          <span className="card-fallback">Belum terhubung ke Firebase</span>
+        )}
       </div>
     </div>
   );

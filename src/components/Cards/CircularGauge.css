@@ -75,3 +75,11 @@
   height: 24px;
   object-fit: contain;
 }
+
+.gauge-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+  margin-top: 20px;
+}

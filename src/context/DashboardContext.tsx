@@ -29,6 +29,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, query, orderBy, limit, onSnapshot, Unsubscribe } from 'firebase/firestore';
+import { getDatabase, ref, onValue, off, DatabaseReference } from 'firebase/database';
 import { sensorService, plantService } from '../services/api.service';
 import {
   SensorData,
@@ -55,6 +56,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const rtdb = getDatabase(app);
 
 // ============================================================================
 // DATA PROCESSING FUNCTIONS
@@ -126,18 +128,11 @@ interface DashboardContextType {
   plantInfo: PlantInfo;
   isLoading: boolean;
   error: string | null;
+  isRealtimeConnected: boolean;
   refreshData: () => Promise<void>;
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
-
-export const useDashboard = () => {
-  const context = useContext(DashboardContext);
-  if (!context) {
-    throw new Error('useDashboard must be used within DashboardProvider');
-  }
-  return context;
-};
 
 interface DashboardProviderProps {
   children: ReactNode;
@@ -153,6 +148,138 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
   const [plantInfo, setPlantInfo] = useState<PlantInfo>(defaultPlantInfo);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [isRealtimeConnected, setIsRealtimeConnected] = useState<boolean>(false);
+
+  /**
+   * Setup Firebase Realtime Database listeners untuk sensor cards
+   * Path structure: status/groupX/sensorName
+   */
+  useEffect(() => {
+    const realtimeRefs: DatabaseReference[] = [];
+
+    try {
+      // Temperature: status/group6&35/humidity (NOTE: path contains &, might need encoding)
+      const tempRef = ref(rtdb, 'status/group6&35/temperature');
+      realtimeRefs.push(tempRef);
+      onValue(
+        tempRef,
+        (snapshot) => {
+          const value = snapshot.val();
+          if (value !== null && value !== undefined) {
+            setSensorData((prev) => ({ ...prev, temperature: Number(value) }));
+            setIsRealtimeConnected(true);
+            console.log('✓ RTDB Temperature:', value);
+          }
+        },
+        (error) => {
+          console.error('❌ RTDB Temperature error:', error);
+        }
+      );
+
+      // Wind Speed: status/group30/windSpeed
+      const windRef = ref(rtdb, 'status/group30/windSpeed');
+      realtimeRefs.push(windRef);
+      onValue(
+        windRef,
+        (snapshot) => {
+          const value = snapshot.val();
+          if (value !== null && value !== undefined) {
+            setSensorData((prev) => ({ ...prev, windSpeed: Number(value) }));
+            setIsRealtimeConnected(true);
+            console.log('✓ RTDB Wind Speed:', value);
+          }
+        },
+        (error) => {
+          console.error('❌ RTDB Wind Speed error:', error);
+        }
+      );
+
+      // Light Intensity: status/group3/lux
+      const luxRef = ref(rtdb, 'status/group3/lux');
+      realtimeRefs.push(luxRef);
+      onValue(
+        luxRef,
+        (snapshot) => {
+          const value = snapshot.val();
+          if (value !== null && value !== undefined) {
+            setSensorData((prev) => ({ ...prev, lightIntensity: Number(value) }));
+            setIsRealtimeConnected(true);
+            console.log('✓ RTDB Light Intensity:', value);
+          }
+        },
+        (error) => {
+          console.error('❌ RTDB Light Intensity error:', error);
+        }
+      );
+
+      // Air Humidity: status/group6&35/humidity
+      const humidityRef = ref(rtdb, 'status/group6&35/humidity');
+      realtimeRefs.push(humidityRef);
+      onValue(
+        humidityRef,
+        (snapshot) => {
+          const value = snapshot.val();
+          if (value !== null && value !== undefined) {
+            setSensorData((prev) => ({ ...prev, airHumidity: Number(value) }));
+            setIsRealtimeConnected(true);
+            console.log('✓ RTDB Air Humidity:', value);
+          }
+        },
+        (error) => {
+          console.error('❌ RTDB Air Humidity error:', error);
+        }
+      );
+
+      // Soil Moisture: status/group12/soilMoisture
+      const soilRef = ref(rtdb, 'status/group12/soilMoisture');
+      realtimeRefs.push(soilRef);
+      onValue(
+        soilRef,
+        (snapshot) => {
+          const value = snapshot.val();
+          if (value !== null && value !== undefined) {
+            setSensorData((prev) => ({ ...prev, soilMoisture: Number(value) }));
+            setIsRealtimeConnected(true);
+            console.log('✓ RTDB Soil Moisture:', value);
+          }
+        },
+        (error) => {
+          console.error('❌ RTDB Soil Moisture error:', error);
+        }
+      );
+
+      // Water Tank: status/group12/waterTank
+      const waterRef = ref(rtdb, 'status/group12/waterTank');
+      realtimeRefs.push(waterRef);
+      onValue(
+        waterRef,
+        (snapshot) => {
+          const value = snapshot.val();
+          if (value !== null && value !== undefined) {
+            setSensorData((prev) => ({ ...prev, waterTankLevel: Number(value) }));
+            setIsRealtimeConnected(true);
+            console.log('✓ RTDB Water Tank:', value);
+          }
+        },
+        (error) => {
+          console.error('❌ RTDB Water Tank error:', error);
+        }
+      );
+
+      console.log('✓ Firebase Realtime Database listeners initialized');
+    } catch (err) {
+      console.error('❌ RTDB setup error:', err);
+      setError('Gagal setup Realtime Database');
+    }
+
+    // Cleanup: detach all listeners
+    return () => {
+      realtimeRefs.forEach((dbRef) => {
+        off(dbRef);
+      });
+      console.log('🔌 RTDB listeners detached');
+    };
+  }, []);
 
   /**
    * Realtime listener Group 30 (RPM)
@@ -258,19 +385,14 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
   }, []);
 
   /**
-   * Fetch data lain (sementara masih dari service lama)
+   * Fetch plant info only (tidak fetch sensor data lagi)
    */
   const fetchOtherData = async () => {
     try {
-      const [sensors, plant] = await Promise.all([
-        sensorService.getCurrentData(),
-        plantService.getPlantInfo(),
-      ]);
-
-      setSensorData(sensors);
+      const plant = await plantService.getPlantInfo();
       setPlantInfo(plant);
     } catch (err) {
-      console.error('Error fetching other data:', err);
+      console.error('Error fetching plant info:', err);
     }
   };
 
@@ -280,6 +402,7 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
 
   useEffect(() => {
     fetchOtherData();
+    setIsLoading(false);
   }, []);
 
   const value: DashboardContextType = {
@@ -289,8 +412,18 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     plantInfo,
     isLoading,
     error,
+    isRealtimeConnected,
     refreshData,
   };
 
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;
+};
+
+// Export hook after provider to fix Fast Refresh
+export const useDashboard = () => {
+  const context = useContext(DashboardContext);
+  if (!context) {
+    throw new Error('useDashboard must be used within DashboardProvider');
+  }
+  return context;
 };

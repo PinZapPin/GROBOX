@@ -1,219 +1,592 @@
+/* ============================================================================
+   MANUAL CONTROL PAGE - RESPONSIVE LAYOUT
+   ============================================================================ */
+
 .manual-control-page {
-  flex: 1;
   min-height: 100vh;
-  background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 50%, #f1f8e9 100%);
-  padding: 30px 40px;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 40px;
   font-family: 'Poppins', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .page-header {
+  text-align: center;
   margin-bottom: 40px;
-  text-align: left;
-  width: 100%;
 }
 
 .page-title {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   color: #2c3e50;
-  margin: 0 0 8px 0;
-  text-align: left;
+  margin: 0 0 10px 0;
 }
 
 .page-subtitle {
-  font-size: 18px;
-  font-weight: 500;
+  font-size: 20px;
+  font-weight: 400;
   color: #7f8c8d;
+  margin: 0;
+}
+
+/* ============================================================================
+   CONTROL CARDS CONTAINER
+   ============================================================================ */
+
+.control-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.control-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.control-card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+/* ============================================================================
+   CARD TITLE + ICON (NEW)
+   ============================================================================ */
+
+.card-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2c3e50;
   margin: 0;
   text-align: left;
 }
 
-.control-container {
-  width: 100%;
-  max-width: 1200px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-  align-items: stretch;
-}
+/* ============================================================================
+   CARD HEADER ROW
+   ============================================================================ */
 
-.control-section {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  align-items: center;
-}
-
-.section-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 24px 0;
-  text-align: center;
-}
-
-.mode-selector {
+.card-header-row {
   display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
-.mode-button {
-  flex: 1;
-  padding: 12px 20px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #7f8c8d;
+.card-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+
+.card-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ============================================================================
+   MODE SWITCH (Auto/Manual) - Smooth Pill Transition
+   ============================================================================ */
+
+.mode-switch {
+  display: flex;
+  position: relative;
+  gap: 0;
+  background: #ecf0f1;
+  border-radius: 25px;
+  padding: 4px;
+  transition: opacity 0.3s ease;
+}
+
+.switch-option {
+  padding: 10px 24px;
+  border: none;
+  background: transparent;
+  border-radius: 20px;
   font-family: 'Poppins', sans-serif;
   font-size: 14px;
   font-weight: 600;
+  color: #7f8c8d;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: lowercase;
+  position: relative;
+  z-index: 1;
 }
 
-.mode-button.active {
-  background: #4a9d5f;
-  border-color: #4a9d5f;
+.switch-option.active {
+  background: #3498db;
   color: #ffffff;
+  box-shadow: 0 2px 10px rgba(52, 152, 219, 0.35);
+  transform: scale(1.02);
 }
 
-.mode-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.switch-option:hover:not(.active) {
+  background: rgba(52, 152, 219, 0.12);
+  color: #3498db;
 }
 
-.control-item {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.control-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #34495e;
-}
-
-.control-slider {
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: #e0e0e0;
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.control-slider:disabled {
+.switch-option:disabled {
+  cursor: not-allowed;
   opacity: 0.5;
-  cursor: not-allowed;
 }
 
-.control-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #4a9d5f;
+/* ============================================================================
+   POWER TOGGLE (LIGHT ON/OFF) - Smoother Animation
+   ============================================================================ */
+
+.power-toggle-container {
+  margin-bottom: 0;
+}
+
+.power-toggle {
+  position: relative;
+  width: 200px;
+  height: 50px;
+  background: #ecf0f1;
+  border-radius: 25px;
   cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 4px;
 }
 
-.control-slider:disabled::-webkit-slider-thumb {
-  cursor: not-allowed;
-}
-
-.control-slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #4a9d5f;
-  cursor: pointer;
-  border: none;
-}
-
-.control-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: #4a9d5f;
-  text-align: center;
-}
-
-.toggle-item {
+.toggle-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f8f9fa;
-  padding: 16px 24px;
-  border-radius: 12px;
-  margin-bottom: 20px;
+  padding: 0 20px;
+  z-index: 1;
 }
 
-.toggle-label {
-  font-size: 15px;
-  font-weight: 500;
-  color: #34495e;
-}
-
-.toggle-button {
-  padding: 8px 24px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  background: #ffffff;
-  color: #7f8c8d;
-  font-family: 'Poppins', sans-serif;
+.toggle-label-on,
+.toggle-label-off {
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 70px;
+  color: #7f8c8d;
+  transition: all 0.25s ease;
 }
 
-.toggle-button.active {
-  background: #4a9d5f;
-  border-color: #4a9d5f;
+.toggle-label-on.active,
+.toggle-label-off.active {
   color: #ffffff;
 }
 
-.toggle-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.toggle-thumb {
+  position: absolute;
+  width: 92px;
+  height: 42px;
+  background: #27ae60;
+  border-radius: 21px;
+  top: 4px;
+  left: 4px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 3px 12px rgba(39, 174, 96, 0.45);
 }
 
-.save-button {
+.power-toggle.off .toggle-thumb {
+  left: calc(100% - 96px);
+  background: #e74c3c;
+  box-shadow: 0 3px 12px rgba(231, 76, 60, 0.45);
+}
+
+/* Light Control Layout - Title left, switches right */
+.light-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+.light-switches-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.light-switches-right .mode-switch {
+  width: 200px;
+}
+
+/* ============================================================================
+   CARD CENTER - FANS & LIGHT
+   ============================================================================ */
+
+.card-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+  min-height: 320px;
+}
+
+/* Four Fans Grid */
+.four-fans-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30px;
   width: 100%;
-  padding: 14px 40px;
-  background: linear-gradient(135deg, #4a9d5f 0%, #3d8b4f 100%);
+  max-width: 1200px;
+}
+
+.single-fan-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.fan-container {
+  position: relative;
+  width: 270px;
+  height: 270px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fan-blades-small {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.fan-container.spinning .fan-blades-small {
+  animation: spin 1.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* 7-blade fan design with minimalist gray/black color */
+.fan-blade-small {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.fan-blade-small::before {
+  content: '';
+  position: absolute;
+  width: 112px;
+  height: 52px;
+  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+  border-radius: 50% 50% 15% 15%;
+  top: 50%;
+  left: 50%;
+  transform-origin: 22px center;
+  margin-left: -22px;
+  margin-top: -26px;
+  box-shadow: 
+    0 2px 6px rgba(0, 0, 0, 0.3),
+    inset -2px -2px 8px rgba(0, 0, 0, 0.2),
+    inset 2px 2px 8px rgba(255, 255, 255, 0.1);
+  clip-path: polygon(20% 0%, 100% 15%, 100% 85%, 20% 100%, 0% 50%);
+}
+
+.fan-ring {
+  position: absolute;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  border: 6px solid #2c3e50;
+  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+  box-shadow: 
+    0 2px 10px rgba(0, 0, 0, 0.25),
+    inset 0 2px 6px rgba(255, 255, 255, 0.15);
+  z-index: 5;
+}
+
+.fan-rpm-small {
+  position: relative;
+  z-index: 10;
+  background: #ffffff;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+}
+
+.rpm-value-small {
+  font-size: 27px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.fan-label {
+  font-size: 21px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* LIGHT circle */
+.light-indicator {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  box-shadow: 0 0 45px rgba(244, 224, 77, 0.6);
+}
+
+/* ============================================================================
+   SLIDER & SAVE BUTTON - Enhanced Styling
+   ============================================================================ */
+
+.card-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.slider-section {
+  width: 100%;
+}
+
+.slider-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #7f8c8d;
+  margin-bottom: 10px;
+}
+
+.slider-container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.slider-value {
+  min-width: 50px;
+  text-align: right;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.duty-slider {
+  width: 100%;
+  height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #ecf0f1;
+  border-radius: 10px;
+  outline: none;
+  transition: opacity 0.3s ease;
+}
+
+/* Fan slider thumb - green for save/confirm actions */
+.duty-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #27ae60;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duty-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 14px rgba(39, 174, 96, 0.55);
+}
+
+.duty-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: #27ae60;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.duty-slider::-moz-range-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 14px rgba(39, 174, 96, 0.55);
+}
+
+/* Disabled state - desaturated gray */
+.duty-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.duty-slider:disabled::-webkit-slider-thumb {
+  background: #95a5a6;
+  cursor: not-allowed;
+  box-shadow: 0 2px 6px rgba(149, 165, 166, 0.3);
+}
+
+.duty-slider:disabled::-moz-range-thumb {
+  background: #95a5a6;
+  cursor: not-allowed;
+  box-shadow: 0 2px 6px rgba(149, 165, 166, 0.3);
+}
+
+.save-button-large {
+  padding: 18px 60px;
+  background: #27ae60;
   color: #ffffff;
   border: none;
-  border-radius: 10px;
-  font-family: 'Poppins', sans-serif;
+  border-radius: 30px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(74, 157, 95, 0.3);
-  margin-top: 10px;
+  min-width: 180px;
+  align-self: center;
+  box-shadow: 0 4px 14px rgba(39, 174, 96, 0.3);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.save-button:hover {
+.save-button-large:hover {
+  background: #229954;
+  box-shadow: 0 6px 18px rgba(39, 174, 96, 0.45);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(74, 157, 95, 0.4);
 }
 
+.save-button-large:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(39, 174, 96, 0.35);
+}
+
+/* ============================================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================================ */
+
+/* Tablet Large (≤1400px) */
+@media (max-width: 1400px) {
+  .control-card { padding: 25px; }
+  .card-center { min-height: 280px; }
+  .four-fans-grid { gap: 20px; }
+  .fan-container { width: 240px; height: 240px; }
+  .fan-blade-small::before { width: 100px; height: 46px; margin-top: -23px; transform-origin: 20px center; margin-left: -20px; }
+  .fan-ring { width: 73px; height: 73px; }
+  .fan-rpm-small { width: 80px; height: 80px; }
+  .rpm-value-small { font-size: 24px; }
+  .fan-label { font-size: 19px; }
+}
+
+/* Tablet (≤1100px) */
+@media (max-width: 1100px) {
+  .four-fans-grid { 
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+  .fan-container { width: 225px; height: 225px; }
+  .fan-blade-small::before { width: 94px; height: 43px; margin-top: -21px; transform-origin: 19px center; margin-left: -19px; }
+  .fan-ring { width: 68px; height: 68px; }
+  .fan-rpm-small { width: 75px; height: 75px; }
+  .rpm-value-small { font-size: 22px; }
+  .fan-label { font-size: 18px; }
+}
+
+/* Mobile Large (≤768px) */
 @media (max-width: 768px) {
-  .manual-control-page {
-    padding: 20px;
+  .card-header-row { 
+    flex-direction: column; 
+    gap: 15px; 
+    align-items: flex-start;
   }
   
-  .control-container {
-    max-width: 100%;
+  /* Light Control responsive layout */
+  .light-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .light-switches-right {
+    width: 100%;
+    align-items: stretch;
+  }
+  
+  .light-switches-right .mode-switch {
+    width: 100%;
+  }
+  
+  .power-toggle {
+    width: 100%;
+  }
+  
+  .four-fans-grid { 
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .save-button-large { width: 100%; }
+}
+
+/* Mobile Small (≤480px) */
+@media (max-width: 480px) {
+  .four-fans-grid { 
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .card-title { font-size: 22px; }
+  
+  .fan-container { 
+    width: 210px; 
+    height: 210px; 
+  }
+  
+  .fan-blade-small::before { 
+    width: 88px; 
+    height: 40px; 
+    margin-top: -20px;
+    transform-origin: 18px center;
+    margin-left: -18px;
+  }
+  
+  .fan-ring {
+    width: 63px;
+    height: 63px;
+  }
+  
+  .fan-rpm-small {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .rpm-value-small {
+    font-size: 20px;
+  }
+  
+  .fan-label {
+    font-size: 17px;
+  }
+  
+  .card-title-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }

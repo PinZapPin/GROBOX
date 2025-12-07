@@ -70,3 +70,12 @@
     transform: translateY(-4px);
   }
 }
+
+.tank-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  margin-top: 0px;
+  flex: 1;
+}

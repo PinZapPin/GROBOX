@@ -13,7 +13,7 @@ import RpmHistoryChart from '../../components/Cards/RpmHistoryChart';
 import './DashboardPage.css';
 
 const DashboardPage: React.FC = () => {
-  const { sensorData, luxHistory, rpmHistory, plantInfo, isLoading, error } = useDashboard();
+  const { sensorData, luxHistory, rpmHistory, plantInfo, isLoading, error, isRealtimeConnected } = useDashboard();
 
   if (isLoading && !sensorData) {
     return (
@@ -42,14 +42,14 @@ const DashboardPage: React.FC = () => {
         <div className="right-section">
           <div className="cards-grid">
             {/* Row 1: Temperature, Wind Speed, Light Intensity */}
-            <TemperatureCard value={sensorData.temperature} />
-            <WindSpeedCard value={sensorData.windSpeed} />
-            <LightIntensityCard value={sensorData.lightIntensity} />
+            <TemperatureCard value={sensorData.temperature} isConnected={isRealtimeConnected} />
+            <WindSpeedCard value={sensorData.windSpeed} isConnected={isRealtimeConnected} />
+            <LightIntensityCard value={sensorData.lightIntensity} isConnected={isRealtimeConnected} />
             
             {/* Row 2: Air Humidity, Soil Moisture, Water Tank */}
-            <HumidityCard value={sensorData.airHumidity} />
-            <SoilMoistureCard value={sensorData.soilMoisture} />
-            <WaterTankCard value={sensorData.waterTankLevel} />
+            <HumidityCard value={sensorData.airHumidity} isConnected={isRealtimeConnected} />
+            <SoilMoistureCard value={sensorData.soilMoisture} isConnected={isRealtimeConnected} />
+            <WaterTankCard value={sensorData.waterTankLevel} isConnected={isRealtimeConnected} />
             
             {/* Row 3: Light Intensity History */}
             <LuxHistoryChart data={luxHistory} />

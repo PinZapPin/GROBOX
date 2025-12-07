@@ -85,9 +85,9 @@ const ManualControlPage: React.FC = () => {
 
   return (
     <div className="manual-control-page" style={{ backgroundImage: `url(${images.background})` }}>
-      <header className="page-header">
-        <h1 className="page-title">Judul Proyek Ini</h1>
-        <p className="page-subtitle">Manual Control</p>
+      <header className="manual-control-header">
+        <h1 className="manual-control-title">Judul Proyek Ini</h1>
+        <p className="manual-control-subtitle">Manual Control</p>
       </header>
 
       <div className="control-container">
@@ -100,7 +100,8 @@ const ManualControlPage: React.FC = () => {
                 <img src={images.frame.fanIcon} alt="Fan" />
               </div>
             </div>
-            <div className="mode-switch">
+            <div className="switch-container-right">
+              <div className="mode-switch">
               <button
                 className={`switch-option ${fanAutoMode ? 'active' : ''}`}
                 onClick={() => setFanAutoMode(true)}
@@ -113,6 +114,7 @@ const ManualControlPage: React.FC = () => {
               >
                 manual
               </button>
+              </div>
             </div>
           </div>
 
@@ -233,8 +235,7 @@ const ManualControlPage: React.FC = () => {
 
         {/* Light Control Card */}
         <div className="control-card">
-          {/* Title on left, switches on right */}
-          <div className="light-title-row">
+          <div className="card-header-row">
             <div className="card-title-wrapper">
               <h2 className="card-title">Light Control</h2>
               <div className="card-icon">
@@ -242,7 +243,7 @@ const ManualControlPage: React.FC = () => {
               </div>
             </div>
             
-            <div className="light-switches-right">
+            <div className="switch-container-right">
               <div className="power-toggle-container">
                 <div 
                   className={`power-toggle ${lightOn ? 'on' : 'off'}`}

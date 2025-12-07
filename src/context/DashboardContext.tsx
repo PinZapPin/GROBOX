@@ -30,7 +30,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, query, orderBy, limit, onSnapshot, Unsubscribe } from 'firebase/firestore';
 import { getDatabase, ref, onValue, off, DatabaseReference } from 'firebase/database';
-import { sensorService, plantService } from '../services/api.service';
+import { plantService } from '../services/api.service';
 import {
   SensorData,
   LuxDataPoint,

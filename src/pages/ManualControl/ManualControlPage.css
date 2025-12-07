@@ -3,29 +3,34 @@
    ============================================================================ */
 
 .manual-control-page {
+  flex: 1;
   min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  padding: 40px;
+  padding: 20px 30px;
   font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
-.page-header {
-  text-align: center;
-  margin-bottom: 40px;
+.manual-control-header {
+  margin-bottom: 15px;
+  flex-shrink: 0;
 }
 
-.page-title {
-  font-size: 36px;
+.manual-control-title {
+  font-size: 32px;
   font-weight: 700;
   color: #2c3e50;
-  margin: 0 0 10px 0;
+  margin: 0 0 8px 0;
 }
 
-.page-subtitle {
-  font-size: 20px;
-  font-weight: 400;
+.manual-control-subtitle {
+  font-size: 18px;
+  font-weight: 500;
   color: #7f8c8d;
   margin: 0;
 }
@@ -65,6 +70,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 0 1 auto;
 }
 
 .card-title {
@@ -76,7 +82,7 @@
 }
 
 /* ============================================================================
-   CARD HEADER ROW
+   CARD HEADER ROW + SWITCH CONTAINER
    ============================================================================ */
 
 .card-header-row {
@@ -84,6 +90,15 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  gap: 20px;
+}
+
+.switch-container-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+  flex-shrink: 0;
 }
 
 .card-icon {
@@ -110,6 +125,7 @@
   border-radius: 25px;
   padding: 4px;
   transition: opacity 0.3s ease;
+  width: 200px;
 }
 
 .switch-option {
@@ -204,25 +220,6 @@
   left: calc(100% - 96px);
   background: #e74c3c;
   box-shadow: 0 3px 12px rgba(231, 76, 60, 0.45);
-}
-
-/* Light Control Layout - Title left, switches right */
-.light-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 30px;
-}
-
-.light-switches-right {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: flex-end;
-}
-
-.light-switches-right .mode-switch {
-  width: 200px;
 }
 
 /* ============================================================================
@@ -516,24 +513,18 @@
     align-items: flex-start;
   }
   
-  /* Light Control responsive layout */
-  .light-title-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+  .switch-container-right {
+    width: 100%;
+    align-items: flex-end;
   }
   
-  .light-switches-right {
-    width: 100%;
-    align-items: stretch;
-  }
-  
-  .light-switches-right .mode-switch {
-    width: 100%;
+  /* Keep both switches at fixed 200px width */
+  .switch-container-right .mode-switch {
+    width: 200px;
   }
   
   .power-toggle {
-    width: 100%;
+    width: 200px;
   }
   
   .four-fans-grid { 

@@ -1,0 +1,17 @@
+.vpd-card {
+  background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+  transition: all 0.4s ease;
+}
+
+.vpd-card:hover {
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.08) 0%, #ffffff 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(52, 152, 219, 0.15);
+}
+
+.vpd-icon .placeholder-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #000000;
+}

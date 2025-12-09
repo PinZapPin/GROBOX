@@ -23,7 +23,7 @@ const WindSpeedCard: React.FC<WindSpeedCardProps> = ({ value, isConnected = fals
             <span className="card-unit">m/s</span>
           </>
         ) : (
-          <span className="card-fallback">Belum terhubung ke Firebase</span>
+          <span className="card-no-data">(No Data)</span>
         )}
       </div>
       <div className="wind-lines"></div>

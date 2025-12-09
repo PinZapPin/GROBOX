@@ -1,14 +1,33 @@
-# 🌱 Smart Greenhouse Dashboard
+# 🌱 G.R.O.B.O.X Dashboard
 
-Dashboard monitoring dan kontrol smart greenhouse dengan **React + TypeScript** yang terintegrasi dengan **Firebase Realtime Database** dan **Firestore**.
+Dashboard monitoring dan kontrol smart greenhouse dengan **React + TypeScript** yang terintegrasi dengan **Firebase Realtime Database**, **Firestore**, dan **Gemini AI Assistant**.
 
 ## 🌟 Fitur
 
 - **Real-time Monitoring**: Temperature, Wind Speed, Air Humidity, Soil Moisture, Water Tank Level, Light Intensity
 - **Visualisasi Data Historis**: Grafik untuk Light Intensity dan Fan RPM menggunakan Recharts + Firestore
 - **Manual Control**: Kontrol kipas dan lampu dengan mode auto/manual via Firebase RTDB
+- **AI Assistant**: Chat dengan Gemini AI untuk analisis data dan rekomendasi (floating button di setiap halaman)
 - **Responsive Design**: UI minimalis dan modern yang responsif di semua perangkat
 - **Firebase Integration**: Data realtime dari Firebase Realtime Database dan Firestore
+- **Secure API Management**: API keys tersentralisasi dan di-ignore dari Git
+
+## 🔒 Security Setup (PENTING!)
+
+**SEBELUM PUSH KE GITHUB**, pastikan file API configuration sudah di-setup dengan benar:
+
+1. File `src/config/apiConfig.ts` sudah berisi API keys Anda
+2. File tersebut **OTOMATIS DI-IGNORE** dari Git (sudah ada di `.gitignore`)
+3. Baca dokumentasi lengkap di **[API_SECURITY_SETUP.md](API_SECURITY_SETUP.md)**
+
+Untuk developer baru yang clone repository:
+```bash
+# Copy template
+cp src/config/apiConfig.example.ts src/config/apiConfig.ts
+
+# Edit dan isi dengan API keys Anda
+nano src/config/apiConfig.ts
+```
 
 ## 🏗️ Arsitektur
 
@@ -54,6 +73,10 @@ website-rev/
 ├── src/
 │   ├── assets/                # Icons, images, fonts
 │   ├── components/
+│   │   ├── AiChat/            # 🆕 AI Chat components
+│   │   │   ├── AiChatButton.tsx    # Floating AI button
+│   │   │   ├── AiChatPanel.tsx     # Chat panel UI
+│   │   │   └── AiChat.css          # Chat styling
 │   │   ├── Cards/             # Card components untuk sensor
 │   │   │   ├── TemperatureCard.tsx
 │   │   │   ├── WindSpeedCard.tsx
@@ -66,25 +89,48 @@ website-rev/
 │   │   │   └── CircularGauge.tsx
 │   │   ├── PlantInfo/         # Plant info component
 │   │   └── Sidebar/           # Navigation sidebar
+│   ├── config/                # 🆕 API Configuration (SECURE)
+│   │   ├── apiConfig.ts       # ⚠️ IGNORED from Git (contains real keys)
+│   │   └── apiConfig.example.ts # Template for new developers
 │   ├── context/
 │   │   └── DashboardContext.tsx  # Firebase listeners & state
 │   ├── pages/
 │   │   ├── Dashboard/
-│   │   │   ├── DashboardPage.tsx
+│   │   │   ├── DashboardPage.tsx     # 🆕 + AI Chat button
 │   │   │   └── DashboardPage.css
 │   │   ├── ManualControl/
-│   │   │   ├── ManualControlPage.tsx  # Fan & Light control
+│   │   │   ├── ManualControlPage.tsx # Fan & Light control + 🆕 AI Chat
 │   │   │   └── ManualControlPage.css
 │   │   └── About/
 │   ├── services/
+│   │   ├── geminiService.ts   # 🆕 Gemini AI integration
 │   │   ├── api.service.ts
 │   │   └── dummyData.ts
 │   ├── App.tsx
 │   └── main.tsx
+├── .gitignore                 # 🆕 Updated to ignore apiConfig.ts
 ├── package.json
 ├── vite.config.ts
-└── README.md
+├── README.md
+├── AI_CHAT_README.md          # 🆕 AI Chat setup guide
+└── API_SECURITY_SETUP.md      # 🆕 Security documentation
 ```
+
+## 🤖 AI Chat Assistant
+
+Dashboard dilengkapi dengan floating AI chat button (Gemini AI) yang tersedia di:
+- Dashboard Page
+- Manual Control Page
+
+**Features:**
+- 💬 Chat dengan AI tentang sensor data
+- 🎯 Quick questions untuk pertanyaan umum
+- 🔄 Real-time responses menggunakan Gemini API
+- 🧠 Context-aware (memahami konteks greenhouse monitoring)
+- 🔒 API key tersentralisasi dan aman
+
+**Setup:**
+Baca dokumentasi lengkap di **[AI_CHAT_README.md](AI_CHAT_README.md)**
 
 ## 🚀 Cara Menjalankan
 
@@ -94,7 +140,17 @@ website-rev/
 npm install
 ```
 
-### 2. Jalankan Development Server
+### 2. Setup API Configuration
+
+```powershell
+# Copy template file
+cp src/config/apiConfig.example.ts src/config/apiConfig.ts
+
+# Edit dan isi dengan API keys Anda (Firebase + Gemini)
+# File ini TIDAK AKAN ter-commit ke Git (sudah di-ignore)
+```
+
+### 3. Jalankan Development Server
 
 ```powershell
 npm run dev

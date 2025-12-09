@@ -57,6 +57,25 @@
   padding: 10px 0;
 }
 
+/* No data state - consistent across all cards */
+.card-no-data,
+.chart-no-data,
+.gauge-no-data {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #c0392b;
+  opacity: 0.7;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
 .card-value-container {
   display: flex;
   align-items: baseline;

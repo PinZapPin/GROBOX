@@ -9,7 +9,7 @@ interface PlantInfoProps {
 
 const PlantInfo: React.FC<PlantInfoProps> = ({ plantInfo }) => {
   return (
-    <div className="plant-info">
+    <div className="plant-info-card">
       <div className="plant-image-container">
         <img src={images.frame.plant} alt={plantInfo.name} className="plant-image" />
       </div>

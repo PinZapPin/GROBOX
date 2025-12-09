@@ -1,0 +1,57 @@
+.soil-status-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.soil-status-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.soil-status-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.soil-status-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 10px;
+  background: rgba(139, 69, 19, 0.05);
+  border-radius: 8px;
+  min-height: 60px;
+}
+
+.soil-status-text {
+  font-size: 15px;
+  font-weight: 500;
+  color: #2c3e50;
+  text-align: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.soil-status-no-data {
+  font-size: 16px;
+  color: #c0392b;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .soil-status-text {
+    font-size: 14px;
+  }
+}

@@ -23,7 +23,7 @@ const TemperatureCard: React.FC<TemperatureCardProps> = ({ value, isConnected = 
             <span className="card-unit">°C</span>
           </>
         ) : (
-          <span className="card-fallback">Belum terhubung ke Firebase</span>
+          <span className="card-no-data">(No Data)</span>
         )}
       </div>
     </div>

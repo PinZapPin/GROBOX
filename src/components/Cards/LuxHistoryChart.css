@@ -42,6 +42,25 @@
   flex: 1;
   min-height: 200px;
   padding: 0 10px 15px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-no-data {
+  width: 100%;
+  height: 100%;
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #c0392b;
+  opacity: 0.7;
 }
 
 /* Responsive adjustments */

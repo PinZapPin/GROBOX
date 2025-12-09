@@ -31,6 +31,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, query, orderBy, limit, onSnapshot, Unsubscribe } from 'firebase/firestore';
 import { getDatabase, ref, onValue, off, DatabaseReference } from 'firebase/database';
 import { plantService } from '../services/api.service';
+import { firebaseConfig } from '../config/apiConfig';
 import {
   SensorData,
   LuxDataPoint,
@@ -43,16 +44,7 @@ import {
 // ============================================================================
 // FIREBASE CONFIGURATION & INITIALIZATION
 // ============================================================================
-const firebaseConfig = {
-  apiKey: 'AIzaSyBRQuZFv7qBlftLINSFxgGeMo4j2uYAwtQ',
-  authDomain: 'despro-43cdc.firebaseapp.com',
-  databaseURL: 'https://despro-43cdc-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId: 'despro-43cdc',
-  storageBucket: 'despro-43cdc.firebasestorage.app',
-  messagingSenderId: '1022318213486',
-  appId: '1:1022318213486:web:5e7f4f4307bda6230f697f',
-  measurementId: 'G-N2YW51X1Q9',
-};
+// Firebase config now imported from secure apiConfig file
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);

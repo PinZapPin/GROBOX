@@ -9,6 +9,29 @@ interface WaterTankCardProps {
 
 const WaterTankCard: React.FC<WaterTankCardProps> = ({ value, isConnected = false }) => {
   const [scale, setScale] = React.useState(1);
+  const [animatedValue, setAnimatedValue] = React.useState(0);
+
+  // Entrance animation for water fill
+  React.useEffect(() => {
+    if (isConnected && value > 0) {
+      const duration = 1000; // 1 second
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        setAnimatedValue(value * progress);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    } else {
+      setAnimatedValue(value);
+    }
+  }, [value, isConnected]);
 
   // Reset scale to 1.0 when window resizes
   React.useEffect(() => {
@@ -33,7 +56,7 @@ const WaterTankCard: React.FC<WaterTankCardProps> = ({ value, isConnected = fals
           <div className="tank-outline">
             <div 
               className="tank-fill"
-              style={{ height: `${Math.min(Math.max(value, 0), 100)}%` }}
+              style={{ height: `${Math.min(Math.max(animatedValue, 0), 100)}%` }}
             >
               <div className="water-wave"></div>
             </div>
@@ -41,8 +64,8 @@ const WaterTankCard: React.FC<WaterTankCardProps> = ({ value, isConnected = fals
           </div>
         </div>
       ) : (
-        <div className="tank-fallback">
-          <span className="card-fallback">Belum terhubung ke Firebase</span>
+        <div className="tank-no-data">
+          <span>(No Data)</span>
         </div>
       )}
     </div>

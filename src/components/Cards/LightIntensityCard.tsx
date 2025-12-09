@@ -23,7 +23,7 @@ const LightIntensityCard: React.FC<LightIntensityCardProps> = ({ value, isConnec
             <span className="card-unit">lux</span>
           </>
         ) : (
-          <span className="card-fallback">Belum terhubung ke Firebase</span>
+          <span className="card-no-data">(No Data)</span>
         )}
       </div>
     </div>

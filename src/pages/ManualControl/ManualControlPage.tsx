@@ -2,20 +2,12 @@ import React, { useState } from 'react';
 import { getDatabase, ref, set } from 'firebase/database';
 import { initializeApp } from 'firebase/app';
 import { useDashboard } from '../../context/DashboardContext';
+import { firebaseConfig } from '../../config/apiConfig';
 import images from '../../assets/images';
+import AiChatButton from '../../components/AiChat/AiChatButton';
 import './ManualControlPage.css';
 
-// Firebase config (sama seperti DashboardContext)
-const firebaseConfig = {
-  apiKey: 'AIzaSyBRQuZFv7qBlftLINSFxgGeMo4j2uYAwtQ',
-  authDomain: 'despro-43cdc.firebaseapp.com',
-  databaseURL: 'https://despro-43cdc-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId: 'despro-43cdc',
-  storageBucket: 'despro-43cdc.firebasestorage.app',
-  messagingSenderId: '1022318213486',
-  appId: '1:1022318213486:web:5e7f4f4307bda6230f697f',
-  measurementId: 'G-N2YW51X1Q9',
-};
+// Firebase config imported from secure apiConfig file
 
 const app = initializeApp(firebaseConfig, 'manual-control-app');
 const rtdb = getDatabase(app);
@@ -86,7 +78,7 @@ const ManualControlPage: React.FC = () => {
   return (
     <div className="manual-control-page" style={{ backgroundImage: `url(${images.background})` }}>
       <header className="manual-control-header">
-        <h1 className="manual-control-title">Judul Proyek Ini</h1>
+        <h1 className="manual-control-title">Growth Regulation & Optimized Box for Environmental Control</h1>
         <p className="manual-control-subtitle">Manual Control</p>
       </header>
 
@@ -315,6 +307,9 @@ const ManualControlPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* AI Chat Button */}
+      <AiChatButton />
     </div>
   );
 };

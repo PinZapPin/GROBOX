@@ -1,0 +1,85 @@
+.switchable-chart-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.switchable-chart-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.switchable-chart-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.switchable-chart-card .card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-nav-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.switch-chart-btn {
+  background: rgba(52, 152, 219, 0.1);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #3498db;
+}
+
+.switch-chart-btn:hover {
+  background: rgba(52, 152, 219, 0.2);
+}
+
+.switch-chart-btn:active {
+  transform: scale(0.95);
+}
+
+.switchable-chart-card .chart-container {
+  flex: 1;
+  min-height: 220px;
+}
+
+.chart-no-data {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
+}
+
+.no-data-text {
+  font-size: 16px;
+  color: #c0392b;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .switchable-chart-card {
+    min-height: 250px;
+  }
+
+  .switchable-chart-card .chart-container {
+    min-height: 180px;
+  }
+}

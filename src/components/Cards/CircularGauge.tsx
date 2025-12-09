@@ -112,8 +112,15 @@ const CircularGauge: React.FC<CircularGaugeProps> = ({
           </div>
         </div>
       ) : (
-        <div className="gauge-fallback">
-          <span className="card-fallback">Belum terhubung ke Firebase</span>
+        <div className="gauge-no-data">
+          <span>(No Data)</span>
+        </div>
+      )}
+      
+      {/* Placeholder for text indicator - to be filled from Firebase */}
+      {title === 'Soil Moisture' && isConnected && (
+        <div className="gauge-indicator-text">
+          {/* Text indicator will be added here */}
         </div>
       )}
     </div>

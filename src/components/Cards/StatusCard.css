@@ -1,0 +1,58 @@
+.status-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.status-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.status-card-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-value-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.status-value {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.status-value.on {
+  color: #27ae60;
+}
+
+.status-value.off {
+  color: #95a5a6;
+}
+
+.status-no-data {
+  font-size: 16px;
+  color: #c0392b;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .status-value {
+    font-size: 36px;
+  }
+}

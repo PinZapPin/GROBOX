@@ -6,9 +6,10 @@ import './LuxHistoryChart.css';
 
 interface LuxHistoryChartProps {
   data: LuxDataPoint[];
+  isConnected?: boolean;
 }
 
-const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data }) => {
+const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data, isConnected = true }) => {
   const [enableAnimation, setEnableAnimation] = useState(true);
   const [chartKey, setChartKey] = useState(0);
 
@@ -58,11 +59,16 @@ const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data }) => {
         </div>
       </div>
       <div className="chart-container">
-        <ResponsiveContainer width="100%" height="100%">
+        {!isConnected || data.length === 0 ? (
+          <div className="chart-no-data">
+            <span>(No Data)</span>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
           <LineChart 
             key={chartKey}
             data={data} 
-            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+            margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.5} />
             <XAxis 
@@ -73,6 +79,7 @@ const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data }) => {
             <YAxis 
               stroke="#7f8c8d"
               style={{ fontSize: '12px', fontFamily: 'Poppins' }}
+              width={50}
             />
             <Tooltip 
               contentStyle={{
@@ -87,12 +94,18 @@ const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data }) => {
               dataKey="lux" 
               stroke="#ffd54f" 
               strokeWidth={3}
-              dot= {false}
+              dot={false}
               isAnimationActive={enableAnimation}
               animationDuration={1500}
               animationEasing="ease-out"
             />
           </LineChart>
+        </ResponsiveContainer>
+        )}
+      </div>
+    </div>
+  );
+};        </LineChart>
         </ResponsiveContainer>
       </div>
     </div>

@@ -60,15 +60,14 @@
 }
 
 .left-section {
-  flex: 0 0 350px;
+  flex: 0 0 calc(33.333% - 15px);
   display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 40px;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .right-section {
-  flex: 1;
+  flex: 0 0 calc(66.667% - 10px);
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -76,69 +75,64 @@
 
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
-  grid-auto-rows: minmax(140px, auto);
+  grid-auto-rows: 220px;
   width: 100%;
 }
 
 /* Specific grid layouts for cards */
 .cards-grid > :nth-child(1),
-.cards-grid > :nth-child(2),
-.cards-grid > :nth-child(3) {
-  /* Row 1: Temperature, Wind Speed, Light Intensity */
+.cards-grid > :nth-child(2) {
+  /* Row 1: Wind Speed, Light Intensity */
   grid-column: span 1;
+  height: 220px;
 }
 
-.cards-grid > :nth-child(4),
+.cards-grid > :nth-child(3),
+.cards-grid > :nth-child(4) {
+  /* Row 2: Temperature, Air Humidity */
+  grid-column: span 1;
+  height: 220px;
+}
+
 .cards-grid > :nth-child(5),
 .cards-grid > :nth-child(6) {
-  /* Row 2: Air Humidity, Soil Moisture, Water Tank */
+  /* Row 3: VPD, VPD Status */
   grid-column: span 1;
+  height: 220px;
 }
 
-.cards-grid > :nth-child(7) {
-  /* Row 3: Lux History Chart - full width */
-  grid-column: span 3;
-  min-height: 300px;
-}
-
+.cards-grid > :nth-child(7),
 .cards-grid > :nth-child(8) {
-  /* Row 4: RPM History Chart - full width */
-  grid-column: span 3;
-  min-height: 300px;
+  /* Row 4: Soil Moisture, Water Tank */
+  grid-column: span 1;
+  height: 220px;
+}
+
+.cards-grid > :nth-child(9) {
+  /* Row 5: Switchable Chart - full width */
+  grid-column: span 2;
+  height: auto;
+  min-height: 320px;
 }
 
 /* ============================================================================
    RESPONSIVE BREAKPOINTS
    ============================================================================ */
 
-/* Tablet Large - 2 columns untuk sensor cards */
+/* Tablet Large */
 @media (max-width: 1400px) {
   .dashboard-page {
     padding: 20px 25px;
   }
 
   .left-section {
-    flex: 0 0 300px;
+    flex: 0 0 calc(35% - 15px);
   }
 
-  .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .cards-grid > :nth-child(1),
-  .cards-grid > :nth-child(2),
-  .cards-grid > :nth-child(3),
-  .cards-grid > :nth-child(4),
-  .cards-grid > :nth-child(5),
-  .cards-grid > :nth-child(6) {
-    grid-column: span 1;
-  }
-
-  .cards-grid > :nth-child(7),
-  .cards-grid > :nth-child(8) {
-    grid-column: span 2;
+  .right-section {
+    flex: 0 0 calc(65% - 10px);
   }
 }
 
@@ -153,24 +147,19 @@
     width: 100%;
     flex: 0 0 auto;
     max-width: 100%;
-    padding-top: 0;
   }
 
   .right-section {
     width: 100%;
+    flex: 0 0 auto;
   }
 
-  .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .cards-grid > :nth-child(7),
-  .cards-grid > :nth-child(8) {
+  .cards-grid > :nth-child(9) {
     grid-column: span 2;
   }
 }
 
-/* Mobile Large - Single column untuk semua cards */
+/* Mobile Large - Single column για semua cards */
 @media (max-width: 768px) {
   .dashboard-page {
     padding: 15px;
@@ -200,11 +189,11 @@
   
   .cards-grid > :nth-child(n) {
     grid-column: span 1;
+    height: auto;
     min-height: auto;
   }
 
-  .cards-grid > :nth-child(7),
-  .cards-grid > :nth-child(8) {
+  .cards-grid > :nth-child(9) {
     min-height: 280px;
   }
 }
@@ -231,8 +220,7 @@
     gap: 8px;
   }
 
-  .cards-grid > :nth-child(7),
-  .cards-grid > :nth-child(8) {
+  .cards-grid > :nth-child(9) {
     min-height: 250px;
   }
 }

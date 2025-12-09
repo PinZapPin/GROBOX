@@ -26,6 +26,7 @@ export const images = {
     aboutIcon: getAssetUrl('sidebar/aboutIcon.png'),
   },
   background: getAssetUrl('background.png'),
+  geminiIcon: getAssetUrl('gemini-color.png'),
 };
 
 export default images;

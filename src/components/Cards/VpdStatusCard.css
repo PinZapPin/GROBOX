@@ -1,0 +1,75 @@
+.vpd-status-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.vpd-status-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.vpd-status-indicators {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.vpd-indicator {
+  height: 80px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: relative;
+  opacity: 0.3;
+}
+
+.vpd-indicator.active {
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.vpd-indicator.low {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.vpd-indicator.optimal {
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+}
+
+.vpd-indicator.high {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+}
+
+.indicator-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.vpd-no-data {
+  grid-column: span 3;
+  text-align: center;
+  padding: 30px 0;
+  font-size: 16px;
+  color: #c0392b;
+  opacity: 0.7;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .vpd-indicator {
+    height: 60px;
+  }
+
+  .indicator-label {
+    font-size: 12px;
+  }
+}

@@ -61,7 +61,7 @@ export const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || 'YOUR_API_KEY
  * - gemini-2.0-flash-exp (Gemini 2.0 Flash - Experimental)
  * - gemini-pro (Gemini Pro - Standard, older)
  */
-export const geminiModel = 'gemini-2.5-flash'; // Using latest stable Flash model
+export const geminiModel = 'gemini-1.5-flash-latest'; // Using latest stable Flash model
 
 /**
  * Gemini API Endpoint

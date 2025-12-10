@@ -61,7 +61,7 @@ const DashboardPage: React.FC = () => {
           <SoilStatusCard statusText={soilStatus} isConnected={isRealtimeConnected} />
           <LightDurationCard duration={lightDuration} isConnected={isRealtimeConnected} />
           <StatusCard title="Reservoir Pump Status" status={pumpStatus === 1 ? 'ON' : 'OFF'} isConnected={isRealtimeConnected} />
-          <StatusCard title="Fan Heater Status" status={heaterStatus} isConnected={isRealtimeConnected} />
+          <StatusCard title="Fan Heater Status" status={heaterStatus === 'ON' ? 'ON' : 'OFF'} isConnected={isRealtimeConnected} />
         </div>
 
         {/* Right Section - 2/3 */}

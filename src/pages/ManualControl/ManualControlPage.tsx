@@ -389,6 +389,12 @@ const ManualControlPage: React.FC = () => {
 
       {/* AI Chat Button */}
       <AiChatButton />
+
+      {/* Copyright Footer */}
+      <footer className="page-footer">
+        <p>&copy; 2024 GROBOX - Smart Greenhouse Monitoring System</p>
+        <p>Developed by <strong>Davin Nazhif Wilviadli</strong> & Kelompok 30 | Teknik Elektro 2022</p>
+      </footer>
     </div>
   );
 };

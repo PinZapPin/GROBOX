@@ -619,3 +619,27 @@
     gap: 8px;
   }
 }
+
+/* Footer Styles */
+.page-footer {
+  width: 100%;
+  text-align: center;
+  padding: 20px 0 10px 0;
+  margin-top: 30px;
+  border-top: 2px solid rgba(224, 224, 224, 0.5);
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.page-footer p {
+  font-size: 13px;
+  color: #7f8c8d;
+  margin: 4px 0;
+}
+
+.page-footer strong {
+  color: #4a9d5f;
+  font-weight: 600;
+}
+

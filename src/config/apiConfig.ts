@@ -26,14 +26,14 @@
  * Firebase uses security rules to protect your data.
  */
 export const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyBRQuZFv7qBlftLINSFxgGeMo4j2uYAwtQ',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'despro-43cdc.firebaseapp.com',
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || 'https://despro-43cdc-default-rtdb.asia-southeast1.firebasedatabase.app',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'despro-43cdc',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'despro-43cdc.firebasestorage.app',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '1022318213486',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:1022318213486:web:5e7f4f4307bda6230f697f',
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-N2YW51X1Q9',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyB8R3vXhUCjOw5ZgdE85QLMNnvywxRsk9g',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'growthbox-16298.firebaseapp.com',
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || 'https://growthbox-16298-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'growthbox-16298',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'growthbox-16298.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '536365471612',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:536365471612:web:ab69201b036e53231a36f9',
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-JMBHRLQ8YF',
 };
 
 // ============================================================================

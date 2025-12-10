@@ -13,8 +13,11 @@ const app = initializeApp(firebaseConfig, 'manual-control-app');
 const rtdb = getDatabase(app);
 
 const ManualControlPage: React.FC = () => {
-  // Get RPM data from DashboardContext
-  const { rpmHistory } = useDashboard();
+  // Get RPM data and heater status from DashboardContext
+  const { rpmHistory, heaterStatus } = useDashboard();
+  
+  // Check if heater is ON (disable fan controls)
+  const isHeaterOn = heaterStatus === 'ON';
   
   const getIndividualFanRpms = (): { fan1: number; fan2: number; fan3: number; fan4: number } => {
     if (!rpmHistory || rpmHistory.length === 0) {
@@ -39,6 +42,9 @@ const ManualControlPage: React.FC = () => {
   const [lightOn, setLightOn] = useState<boolean>(false);
   const [lightAutoMode, setLightAutoMode] = useState<boolean>(true);
   const [lightDuty, setLightDuty] = useState<number>(50);
+
+  // Pump Control State
+  const [pumpOn, setPumpOn] = useState<boolean>(false);
 
   const handleSaveFan = async () => {
     try {
@@ -75,6 +81,17 @@ const ManualControlPage: React.FC = () => {
     }
   };
 
+  const handleSavePump = async () => {
+    try {
+      await set(ref(rtdb, 'status/group6&35/pumpStatus'), pumpOn);
+      console.log('✓ Pump settings saved:', { pumpStatus: pumpOn });
+      alert('Pump settings saved to Firebase!');
+    } catch (error) {
+      console.error('❌ Error saving pump settings:', error);
+      alert('Failed to save pump settings');
+    }
+  };
+
   return (
     <div className="manual-control-page" style={{ backgroundImage: `url(${images.background})` }}>
       <header className="manual-control-header">
@@ -84,7 +101,12 @@ const ManualControlPage: React.FC = () => {
 
       <div className="control-container">
         {/* Fan Control Card */}
-        <div className="control-card">
+        <div className="control-card" style={{ opacity: isHeaterOn ? 0.5 : 1, pointerEvents: isHeaterOn ? 'none' : 'auto' }}>
+          {isHeaterOn && (
+            <div className="heater-warning">
+              <span>⚠️ Fan control disabled - Heater is ON</span>
+            </div>
+          )}
           <div className="card-header-row">
             <div className="card-title-wrapper">
               <h2 className="card-title">Fan Control</h2>
@@ -97,12 +119,14 @@ const ManualControlPage: React.FC = () => {
               <button
                 className={`switch-option ${fanAutoMode ? 'active' : ''}`}
                 onClick={() => setFanAutoMode(true)}
+                disabled={isHeaterOn}
               >
                 auto
               </button>
               <button
                 className={`switch-option ${!fanAutoMode ? 'active' : ''}`}
                 onClick={() => setFanAutoMode(false)}
+                disabled={isHeaterOn}
               >
                 manual
               </button>
@@ -114,7 +138,7 @@ const ManualControlPage: React.FC = () => {
             <div className="four-fans-grid">
               {/* Fan 1 */}
               <div className="single-fan-display">
-                <div className="fan-container spinning">
+                <div className={`fan-container ${!isHeaterOn ? 'spinning' : ''}`}>
                   <div className="fan-blades-small">
                     {Array.from({ length: 7 }).map((_, i) => (
                       <div
@@ -136,7 +160,7 @@ const ManualControlPage: React.FC = () => {
 
               {/* Fan 2 */}
               <div className="single-fan-display">
-                <div className="fan-container spinning">
+                <div className={`fan-container ${!isHeaterOn ? 'spinning' : ''}`}>
                   <div className="fan-blades-small">
                     {Array.from({ length: 7 }).map((_, i) => (
                       <div
@@ -158,7 +182,7 @@ const ManualControlPage: React.FC = () => {
 
               {/* Fan 3 */}
               <div className="single-fan-display">
-                <div className="fan-container spinning">
+                <div className={`fan-container ${!isHeaterOn ? 'spinning' : ''}`}>
                   <div className="fan-blades-small">
                     {Array.from({ length: 7 }).map((_, i) => (
                       <div
@@ -180,7 +204,7 @@ const ManualControlPage: React.FC = () => {
 
               {/* Fan 4 */}
               <div className="single-fan-display">
-                <div className="fan-container spinning">
+                <div className={`fan-container ${!isHeaterOn ? 'spinning' : ''}`}>
                   <div className="fan-blades-small">
                     {Array.from({ length: 7 }).map((_, i) => (
                       <div
@@ -213,13 +237,18 @@ const ManualControlPage: React.FC = () => {
                   value={fanDuty}
                   onChange={(e) => setFanDuty(Number(e.target.value))}
                   className="duty-slider"
-                  disabled={fanAutoMode}
-                  style={{ opacity: fanAutoMode ? 0.4 : 1 }}
+                  disabled={fanAutoMode || isHeaterOn}
+                  style={{ opacity: (fanAutoMode || isHeaterOn) ? 0.4 : 1 }}
                 />
                 <span className="slider-value">{fanDuty}%</span>
               </div>
             </div>
-            <button className="save-button-large" onClick={handleSaveFan}>
+            <button 
+              className="save-button-large" 
+              onClick={handleSaveFan}
+              disabled={isHeaterOn}
+              style={{ opacity: isHeaterOn ? 0.6 : 1, cursor: isHeaterOn ? 'not-allowed' : 'pointer' }}
+            >
               Save
             </button>
           </div>
@@ -301,6 +330,56 @@ const ManualControlPage: React.FC = () => {
             <button 
               className="save-button-large" 
               onClick={handleSaveLight}
+            >
+              Save
+            </button>
+          </div>
+        </div>
+
+        {/* Pump Control Card */}
+        <div className="control-card">
+          <div className="card-header-row">
+            <div className="card-title-wrapper">
+              <h2 className="card-title">Pump Control</h2>
+              <div className="card-icon">
+                <img src={images.frame.pumpIcon} alt="Pump" />
+              </div>
+            </div>
+            
+            <div className="switch-container-right">
+              <div className="power-toggle-container">
+                <div 
+                  className={`power-toggle ${pumpOn ? 'on' : 'off'}`}
+                  onClick={() => setPumpOn(!pumpOn)}
+                >
+                  <div className="toggle-track">
+                    <span className={`toggle-label-on ${pumpOn ? 'active' : ''}`}>On</span>
+                    <span className={`toggle-label-off ${!pumpOn ? 'active' : ''}`}>Off</span>
+                  </div>
+                  <div className="toggle-thumb" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="card-center">
+            <div className="pump-indicator-container">
+              <img 
+                src={images.pumpImage} 
+                alt="Pump" 
+                className="pump-image"
+                style={{ 
+                  opacity: pumpOn ? 1 : 0.3,
+                  transition: 'opacity 0.3s ease'
+                }}
+              />
+            </div>
+          </div>
+
+          <div className="card-controls">
+            <button 
+              className="save-button-large" 
+              onClick={handleSavePump}
             >
               Save
             </button>

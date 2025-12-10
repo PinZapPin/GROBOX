@@ -23,6 +23,16 @@ export interface RpmDataPoint {
   fan4: number;
 }
 
+export interface SoilMoistureDataPoint {
+  time: string;
+  soilMoisture: number;
+}
+
+export interface VpdDataPoint {
+  time: string;
+  vpd: number;
+}
+
 export interface PlantInfo {
   name: string;
   scientificName: string;

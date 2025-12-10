@@ -26,23 +26,24 @@
   justify-content: center;
   transition: all 0.3s ease;
   position: relative;
-  opacity: 0.3;
+  background: #95a5a6;
+  opacity: 1;
 }
 
 .vpd-indicator.active {
-  opacity: 1;
   transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.vpd-indicator.low {
+.vpd-indicator.low.active {
   background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
 }
 
-.vpd-indicator.optimal {
+.vpd-indicator.optimal.active {
   background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
 }
 
-.vpd-indicator.high {
+.vpd-indicator.high.active {
   background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
 }
 

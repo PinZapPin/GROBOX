@@ -89,27 +89,31 @@ interface ContextData {
  * 4. States clearly when data is missing or unavailable
  */
 function getWindySystemPrompt(): string {
-  return `You are Windy, an AI assistant specialized in monitoring and analyzing smart growth chambers for optimal plant health.
+  return `You are Windy, an advanced AI assistant specialized in monitoring and optimizing smart growth chambers for plants.
 
-**Your Mission:**
-Help users understand their sensor data, identify issues, and provide practical recommendations for plant growth, with special focus on airflow, light, humidity, soil moisture, and water usage.
+Your Mission:
+Help users understand their sensor data, identify issues, and provide practical recommendations specifically for growing Aglonema variagata plants, with focus on optimal airflow, light, humidity, soil moisture, and water usage for this plant species.
 
-**Your Capabilities:**
+Your Capabilities:
 - Analyze real-time sensor readings from multiple groups (temperature, wind speed, humidity, soil moisture, water levels, light intensity)
 - Review historical trends from Firestore time-series data
-- Compare current readings against optimal plant growth ranges
-- Provide actionable recommendations for fan control, light management, and environmental adjustments
+- Compare current readings against optimal ranges for Aglonema variagata
+- Provide actionable recommendations for fan control, light management, and environmental adjustments specific to Aglonema variagata care
 - Explain complex data patterns in clear, simple language
 
-**Critical Rules:**
-1. ALWAYS reference the actual Firebase data provided in the context below when answering questions
-2. If data is missing or empty, state that explicitly - never hallucinate or guess values
-3. When users ask vague questions, briefly explain which data sources you have available (group12, group3, group30, group6&35, plus historical sensorData) and provide a useful analysis based on current readings
-4. Focus on practical, specific recommendations rather than generic advice
-5. Reference specific sensor values and timestamps when making observations
-6. If you notice unusual patterns or concerning trends in the data, proactively mention them
+Critical Rules:
+1. ALWAYS respond directly to what the user asks - do not provide unsolicited information
+2. ONLY analyze and mention sensor data when the user specifically asks about it
+3. DO NOT automatically provide plant status, sensor readings, or analysis unless requested
+4. Keep responses focused and relevant to the user's specific question
+5. If data is missing or empty, state that explicitly only if relevant to the question
+6. Reference specific sensor values and timestamps ONLY when answering related questions
+7. NEVER use markdown formatting like bold (** **), italic (* *), or other special formatting - use only plain text
+8. Write in a natural, conversational style without any markdown symbols
+9. Answer general questions about Aglonema variagata care without requiring sensor data
+10. For greetings or casual questions, respond naturally without mentioning sensors or data
 
-**Available Data Sources:**
+Available Data Sources (use only when relevant to the question):
 - RTDB group12: Core environmental sensors
 - RTDB group3: Light control and monitoring
 - RTDB group30: Fan/ventilation control and monitoring  
@@ -117,13 +121,16 @@ Help users understand their sensor data, identify issues, and provide practical 
 - Firestore group30History: Historical fan RPM and related metrics
 - Firestore group3History: Historical light intensity and related metrics
 
-**Response Style:**
-- Clear and concise explanations
-- Data-driven insights with specific numbers
+Response Style:
+- Clear and concise explanations in plain text only
+- Answer exactly what is asked, nothing more
+- Data-driven insights with specific numbers ONLY when relevant to the question
 - Practical action steps when relevant
 - Friendly but professional tone
+- NO markdown formatting whatsoever
+- DO NOT volunteer information not asked for
 
-Now analyze the Firebase data provided below and answer the user's question.`;
+Now analyze the Firebase data provided below and answer the user's question directly and concisely.`;
 }
 
 // ============================================================================
@@ -322,13 +329,18 @@ function buildWindyPrompt(
       sections.push(`${msg.role === 'user' ? 'User' : 'Windy'}: ${msg.content}`);
     });
     sections.push('\n');
+  } else {
+    // First interaction - add greeting instruction
+    sections.push('--- FIRST INTERACTION ---');
+    sections.push('This is the first message from the user. Start your response with a brief, friendly greeting introducing yourself as Windy, mention that you can help with Aglonema variagata plant care based on the sensor data. Keep the greeting concise (2-3 sentences max) before answering their question.');
+    sections.push('\n');
   }
   
   // Current user message
   sections.push(`--- CURRENT USER QUESTION ---`);
   sections.push(`User: ${userMessage}`);
   sections.push('\n');
-  sections.push('Windy, please analyze the data above and provide a helpful, data-driven response:');
+  sections.push('Windy, please analyze the data above and provide a helpful, data-driven response in plain text only (no markdown formatting):');
   
   return sections.join('\n');
 }
@@ -362,8 +374,12 @@ export async function sendMessageToGemini(
 
     // Check if API key is configured
     if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') {
-      console.warn('[Windy] Gemini API key not configured. Using mock response.');
-      return getWindyMockResponse(userMessage);
+      console.error('[Windy] Gemini API key not configured.');
+      return {
+        text: 'Maaf, API key Gemini belum dikonfigurasi. Silakan tambahkan API key di file apiConfig.ts untuk mengaktifkan Windy.',
+        success: false,
+        error: 'API key not configured'
+      };
     }
 
     // Step 1: Fetch all Firebase data
@@ -466,96 +482,19 @@ function postProcessWindyResponse(text: string): string {
   // Remove excessive whitespace
   let processed = text.trim().replace(/\n{3,}/g, '\n\n');
   
+  // Remove markdown formatting
+  processed = processed.replace(/\*\*([^*]+)\*\*/g, '$1'); // Remove bold
+  processed = processed.replace(/\*([^*]+)\*/g, '$1'); // Remove italic
+  processed = processed.replace(/`([^`]+)`/g, '$1'); // Remove code blocks
+  processed = processed.replace(/^#{1,6}\s+/gm, ''); // Remove headers
+  processed = processed.replace(/^[-*+]\s+/gm, '- '); // Normalize bullet points
+  
   // Add "- Windy" signature if not already present
   if (!processed.toLowerCase().includes('windy')) {
-    processed += '\n\n— Windy 🌬️';
+    processed += '\n\n- Windy';
   }
   
   return processed;
-}
-
-/**
- * Generate mock response for testing (when API key is not configured)
- * 
- * This provides basic responses without calling Gemini API
- */
-function getWindyMockResponse(userMessage: string): GeminiResponse {
-  const lowerMessage = userMessage.toLowerCase();
-  
-  let mockText = '';
-  
-  if (lowerMessage.includes('data') || lowerMessage.includes('mean')) {
-    mockText = `Hi! I'm Windy, your growth chamber AI assistant. 🌬️
-
-I can see your sensor data from multiple groups:
-- **Group 12**: Environmental sensors (temperature, humidity, etc.)
-- **Group 3**: Light control and monitoring
-- **Group 30**: Fan/ventilation control
-- **Group 6&35**: Additional sensors
-
-I also have access to historical trends from Firestore to help identify patterns over time.
-
-However, my Gemini API key is not configured yet, so I'm showing you this mock response. Once configured, I'll provide real-time analysis of your actual sensor data!
-
-To enable me, add your Gemini API key in \`src/config/apiConfig.ts\`.`;
-  } else if (lowerMessage.includes('fan') || lowerMessage.includes('wind') || lowerMessage.includes('air')) {
-    mockText = `The fan control system (Group 30) manages ventilation for optimal airflow. 
-
-I would normally analyze:
-- Current fan RPM for all 4 fans
-- Auto/manual mode status
-- Duty cycle settings
-- Historical RPM trends from Firestore
-
-Once my API key is configured, I'll provide specific recommendations based on your current readings!
-
-— Windy 🌬️`;
-  } else if (lowerMessage.includes('light') || lowerMessage.includes('lux')) {
-    mockText = `Light intensity (Group 3) is crucial for plant photosynthesis.
-
-I would normally review:
-- Current lux readings
-- Light control mode (auto/manual)
-- PWM duty cycle
-- Historical light patterns
-
-Configure my Gemini API key to get detailed analysis!
-
-— Windy 🌬️`;
-  } else if (lowerMessage.includes('temperature') || lowerMessage.includes('temp')) {
-    mockText = `Temperature monitoring helps ensure optimal growing conditions.
-
-I would analyze:
-- Current temperature readings
-- Trends over time
-- Correlations with fan activity
-- Recommendations for adjustments
-
-Add the Gemini API key to unlock full analysis!
-
-— Windy 🌬️`;
-  } else {
-    mockText = `Hello! I'm Windy, your smart growth chamber AI assistant. 🌬️
-
-I specialize in:
-- 📊 Analyzing sensor data from all groups
-- 🌡️ Monitoring environmental conditions
-- 💨 Optimizing airflow and ventilation
-- 💡 Managing light intensity
-- 💧 Tracking soil moisture and water levels
-- 📈 Identifying trends and patterns
-
-I have access to real-time data from RTDB (groups 12, 3, 30, 6&35) and historical trends from Firestore.
-
-**Note:** I'm currently in mock mode. Configure the Gemini API key in \`src/config/apiConfig.ts\` to enable full AI analysis!
-
-What would you like to know about your growth chamber?`;
-  }
-  
-  return {
-    text: mockText,
-    success: true,
-  };
 }
 
 // ============================================================================
@@ -608,7 +547,7 @@ export async function enqueueMessageToFirebase(
  */
 export function listenToFirebaseQueue(
   userId: string,
-  callback: (message: ChatMessage) => void
+  _callback: (message: ChatMessage) => void
 ): () => void {
   // TODO: Implement if needed
   console.log('[Windy] listenToFirebaseQueue called:', userId);

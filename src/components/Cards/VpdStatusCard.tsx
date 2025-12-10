@@ -1,16 +1,21 @@
 import React from 'react';
+import images from '../../assets/images';
 import './VpdStatusCard.css';
 
 interface VpdStatusCardProps {
-  vpdValue: number | null;
+  vpdValue: string;
   isConnected?: boolean;
 }
 
 const VpdStatusCard: React.FC<VpdStatusCardProps> = ({ vpdValue, isConnected = false }) => {
   const getActiveStatus = (): 'low' | 'optimal' | 'high' | null => {
-    if (!isConnected || vpdValue === null) return null;
-    if (vpdValue < 0.8) return 'low';
-    if (vpdValue <= 1.2) return 'optimal';
+    if (!isConnected || !vpdValue) return null;
+    
+    const numericValue = parseFloat(vpdValue);
+    if (isNaN(numericValue)) return null;
+    
+    if (numericValue < 0.8) return 'low';
+    if (numericValue >= 0.8 && numericValue <= 1.2) return 'optimal';
     return 'high';
   };
 
@@ -20,18 +25,18 @@ const VpdStatusCard: React.FC<VpdStatusCardProps> = ({ vpdValue, isConnected = f
     <div className="vpd-status-card sensor-card">
       <div className="card-header">
         <h3 className="card-title">VPD Status</h3>
+        <div className="card-icon">
+          <img src={images.frame.vpdIcon} alt="VPD" />
+        </div>
       </div>
       <div className="vpd-status-indicators">
-        {isConnected && vpdValue !== null ? (
+        {isConnected && vpdValue ? (
           <>
             <div className={`vpd-indicator low ${activeStatus === 'low' ? 'active' : ''}`}>
-              <span className="indicator-label">Low</span>
             </div>
             <div className={`vpd-indicator optimal ${activeStatus === 'optimal' ? 'active' : ''}`}>
-              <span className="indicator-label">Optimal</span>
             </div>
             <div className={`vpd-indicator high ${activeStatus === 'high' ? 'active' : ''}`}>
-              <span className="indicator-label">High</span>
             </div>
           </>
         ) : (

@@ -115,8 +115,8 @@ const AiChatPanel: React.FC<AiChatPanelProps> = ({ onClose }) => {
             className="ai-chat-header-icon"
           />
           <div>
-            <h3 className="ai-chat-title">Windy AI Assistant</h3>
-            <p className="ai-chat-subtitle">Growth Chamber Specialist</p>
+            <h3 className="ai-chat-title">Windy</h3>
+            <p className="ai-chat-subtitle">Your Smart Growthbox Assistant</p>
           </div>
         </div>
         <button 

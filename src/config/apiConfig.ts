@@ -43,12 +43,12 @@ export const firebaseConfig = {
 /**
  * Gemini API Key
  * 
- * For production (GitHub Pages), this will be injected via environment variables.
- * For local development, use the key below.
+ * For production (GitHub Pages), this will be injected via environment variables from GitHub Secrets.
+ * For local development, use a placeholder or add your key to .env.local file.
  * 
- * Current key: AIzaSyCluqQCt8UJmy7dWI6O-L9vEpujX0fXxWI
+ * SECURITY: The real API key is stored in GitHub Secrets and NOT committed to the repository.
  */
-export const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyCluqQCt8UJmy7dWI6O-L9vEpujX0fXxWI';
+export const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || 'YOUR_API_KEY_HERE';
 
 /**
  * Gemini Model Configuration
@@ -58,6 +58,7 @@ export const geminiApiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyCluqQC
  * - gemini-1.5-flash (Gemini 1.5 Flash - Stable, fast)
  * - gemini-1.5-flash-8b (Gemini 1.5 Flash 8B - Lightweight)
  * - gemini-1.5-pro-latest (Gemini 1.5 Pro - Most capable)
+ * - gemini-2.0-flash-exp (Gemini 2.0 Flash - Experimental)
  * - gemini-pro (Gemini Pro - Standard, older)
  */
 export const geminiModel = 'gemini-2.5-flash'; // Using latest stable Flash model

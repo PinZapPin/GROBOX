@@ -8,3 +8,4 @@ export { default as LightIntensityCard } from './LightIntensityCard';
 export { default as LuxHistoryChart } from './LuxHistoryChart';
 export { default as RpmHistoryChart } from './RpmHistoryChart';
 export { default as CircularGauge } from './CircularGauge';
+export { default as LightDurationCard } from './LightDurationCard';

@@ -17,6 +17,8 @@ export const images = {
     soilmoistureIcon: getAssetUrl('frame/soilmoistureIcon.png'),
     watercapIcon: getAssetUrl('frame/watercapIcon.png'),
     fanIcon: getAssetUrl('frame/fanIcon.png'),
+    pumpIcon: getAssetUrl('frame/pumpIcon.png'),
+    vpdIcon: getAssetUrl('frame/vpdIcon.png'),
     logo: getAssetUrl('frame/logo.png'),
     plant: getAssetUrl('frame/plant.png'),
   },
@@ -27,6 +29,7 @@ export const images = {
   },
   background: getAssetUrl('background.png'),
   geminiIcon: getAssetUrl('gemini-color.png'),
+  pumpImage: getAssetUrl('pump.jpg'),
 };
 
 export default images;

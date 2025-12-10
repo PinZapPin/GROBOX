@@ -1,27 +1,16 @@
 /**
  * ============================================================================
- * DASHBOARD CONTEXT - PUSAT KONTROL FIRESTORE REALTIME
+ * DASHBOARD CONTEXT - UPDATED VERSION WITH ALL GROUPS
  * ============================================================================
  * 
- * File ini adalah satu-satunya file yang mengatur aliran data Firebase Firestore
- * ke seluruh komponen dashboard. Semua mekanisme pengambilan data, parsing,
- * dan distribusi ada di sini.
+ * This file controls all Firebase Firestore & Realtime Database data streams
+ * for the dashboard. All data fetching, parsing, and distribution happens here.
  * 
- * FITUR:
- * - Firestore realtime listener dengan onSnapshot
- * - Auto-update saat ada data baru dari server (bukan cache)
- * - Maintain maksimal 10 data terbaru
- * - Parse format ESP32 (integerValue, stringValue)
- * - Format timestamp DD-MM-YYYY_HH-MM-SS → HH:MM
- * - Clean, modular, easy to edit
- * 
- * FIRESTORE PATH:
- * - Collection: growthChamber/group30/sensorData
- * - Query: orderBy timestamp ascending, limit 10
- * - Format: { rpm1, rpm2, rpm3, rpm4, windSpeed, timestamp }
- * 
- * OUTPUT KE UI:
- * - RpmDataPoint[] = [{ time, fan1, fan2, fan3, fan4 }]
+ * GROUPS COVERED:
+ * - Group 3: Light control and monitoring
+ * - Group 12: Soil sensors and pump
+ * - Group 30: Fan/ventilation control
+ * - Group 6&35: VPD and heater
  * 
  * ============================================================================
  */
@@ -36,15 +25,16 @@ import {
   SensorData,
   LuxDataPoint,
   RpmDataPoint,
+  SoilMoistureDataPoint,
+  VpdDataPoint,
   PlantInfo,
   defaultSensorData,
   defaultPlantInfo,
 } from '../services/dummyData';
 
 // ============================================================================
-// FIREBASE CONFIGURATION & INITIALIZATION
+// FIREBASE INITIALIZATION
 // ============================================================================
-// Firebase config now imported from secure apiConfig file
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -55,24 +45,34 @@ const rtdb = getDatabase(app);
 // ============================================================================
 
 /**
- * Parse raw Firestore document data untuk RPM (Group 30)
+ * Format timestamp from MM-DD-YY_HH-MM-SS to HH:MM:SS
  */
-const parseRpmFirestoreData = (docData: any): RpmDataPoint | null => {
+const formatTimestamp = (timestamp: string): string => {
+  try {
+    if (timestamp.includes('_')) {
+      const timePart = timestamp.split('_')[1];
+      return timePart ? timePart.replace(/-/g, ':') : timestamp;
+    }
+    return timestamp;
+  } catch (error) {
+    console.error('Format timestamp error:', error);
+    return timestamp;
+  }
+};
+
+/**
+ * Parse Firestore data for RPM (Group 30)
+ */
+const parseRpmData = (docData: any): RpmDataPoint | null => {
   try {
     const rpm1 = docData.rpm1?.integerValue ? parseInt(docData.rpm1.integerValue) : docData.rpm1 || 0;
     const rpm2 = docData.rpm2?.integerValue ? parseInt(docData.rpm2.integerValue) : docData.rpm2 || 0;
     const rpm3 = docData.rpm3?.integerValue ? parseInt(docData.rpm3.integerValue) : docData.rpm3 || 0;
     const rpm4 = docData.rpm4?.integerValue ? parseInt(docData.rpm4.integerValue) : docData.rpm4 || 0;
-
-    let timestamp = docData.timestamp?.stringValue || docData.timestamp || '';
-
-    if (timestamp.includes('_')) {
-      const timePart = timestamp.split('_')[1];
-      timestamp = timePart ? timePart.substring(0, 5).replace('-', ':') : timestamp;
-    }
+    const timestamp = docData.timestamp?.stringValue || docData.timestamp || '';
 
     return {
-      time: timestamp,
+      time: formatTimestamp(timestamp),
       fan1: rpm1,
       fan2: rpm2,
       fan3: rpm3,
@@ -85,23 +85,17 @@ const parseRpmFirestoreData = (docData: any): RpmDataPoint | null => {
 };
 
 /**
- * Parse raw Firestore document data untuk Light Intensity (Group 3)
+ * Parse Firestore data for Light Intensity (Group 3)
  */
-const parseLightFirestoreData = (docData: any): LuxDataPoint | null => {
+const parseLightData = (docData: any): LuxDataPoint | null => {
   try {
     const lux = docData.lightIntensity?.integerValue
       ? parseInt(docData.lightIntensity.integerValue)
       : docData.lightIntensity || 0;
-
-    let timestamp = docData.timestamp?.stringValue || docData.timestamp || '';
-
-    if (timestamp.includes('_')) {
-      const timePart = timestamp.split('_')[1];
-      timestamp = timePart ? timePart.substring(0, 5).replace('-', ':') : timestamp;
-    }
+    const timestamp = docData.timestamp?.stringValue || docData.timestamp || '';
 
     return {
-      time: timestamp,
+      time: formatTimestamp(timestamp),
       lux: lux,
     };
   } catch (error) {
@@ -110,13 +104,67 @@ const parseLightFirestoreData = (docData: any): LuxDataPoint | null => {
   }
 };
 
+/**
+ * Parse Firestore data for Soil Moisture (Group 12)
+ */
+const parseSoilMoistureData = (docData: any): SoilMoistureDataPoint | null => {
+  try {
+    const soilMoisture = docData.soilMoisture?.integerValue
+      ? parseInt(docData.soilMoisture.integerValue)
+      : docData.soilMoisture || 0;
+    const timestamp = docData.timestamp?.stringValue || docData.timestamp || '';
+
+    return {
+      time: formatTimestamp(timestamp),
+      soilMoisture: soilMoisture,
+    };
+  } catch (error) {
+    console.error('Parse Soil Moisture error:', error);
+    return null;
+  }
+};
+
+/**
+ * Parse Firestore data for VPD (Group 6&35)
+ */
+const parseVpdData = (docData: any): VpdDataPoint | null => {
+  try {
+    const vpd = docData.vpd?.doubleValue
+      ? parseFloat(docData.vpd.doubleValue)
+      : docData.vpd || 0;
+    const timestamp = docData.timestamp?.stringValue || docData.timestamp || '';
+
+    return {
+      time: formatTimestamp(timestamp),
+      vpd: vpd,
+    };
+  } catch (error) {
+    console.error('Parse VPD error:', error);
+    return null;
+  }
+};
+
 // ============================================================================
 // CONTEXT INTERFACE
 // ============================================================================
+
 interface DashboardContextType {
+  // Sensor data from RTDB
   sensorData: SensorData;
+  
+  // Historical data from Firestore
   luxHistory: LuxDataPoint[];
   rpmHistory: RpmDataPoint[];
+  soilMoistureHistory: SoilMoistureDataPoint[];
+  vpdHistory: VpdDataPoint[];
+  
+  // Status data from RTDB
+  lightDuration: string;
+  soilStatus: string;
+  pumpStatus: number; // 0 or 1
+  heaterStatus: string; // "ON" or "OFF"
+  vpdValue: string; // string from RTDB
+  
   plantInfo: PlantInfo;
   isLoading: boolean;
   error: string | null;
@@ -131,132 +179,158 @@ interface DashboardProviderProps {
 }
 
 // ============================================================================
-// DASHBOARD PROVIDER - PUSAT KONTROL DATA
+// DASHBOARD PROVIDER
 // ============================================================================
+
 export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }) => {
+  // State for sensor readings
   const [sensorData, setSensorData] = useState<SensorData>(defaultSensorData);
+  
+  // State for historical data
   const [luxHistory, setLuxHistory] = useState<LuxDataPoint[]>([]);
   const [rpmHistory, setRpmHistory] = useState<RpmDataPoint[]>([]);
+  const [soilMoistureHistory, setSoilMoistureHistory] = useState<SoilMoistureDataPoint[]>([]);
+  const [vpdHistory, setVpdHistory] = useState<VpdDataPoint[]>([]);
+  
+  // State for status data
+  const [lightDuration, setLightDuration] = useState<string>('');
+  const [soilStatus, setSoilStatus] = useState<string>('');
+  const [pumpStatus, setPumpStatus] = useState<number>(0);
+  const [heaterStatus, setHeaterStatus] = useState<string>('OFF');
+  const [vpdValue, setVpdValue] = useState<string>('0');
+  
   const [plantInfo, setPlantInfo] = useState<PlantInfo>(defaultPlantInfo);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isRealtimeConnected, setIsRealtimeConnected] = useState<boolean>(false);
 
-  /**
-   * Setup Firebase Realtime Database listeners untuk sensor cards
-   * Path structure: status/groupX/sensorName
-   */
+  // ============================================================================
+  // REALTIME DATABASE LISTENERS
+  // ============================================================================
+
   useEffect(() => {
     const realtimeRefs: DatabaseReference[] = [];
 
     try {
-      // Temperature: status/group6&35/humidity (NOTE: path contains &, might need encoding)
-      const tempRef = ref(rtdb, 'status/group6&35/temperature');
-      realtimeRefs.push(tempRef);
-      onValue(
-        tempRef,
-        (snapshot) => {
-          const value = snapshot.val();
-          if (value !== null && value !== undefined) {
-            setSensorData((prev) => ({ ...prev, temperature: Number(value) }));
-            setIsRealtimeConnected(true);
-            console.log('✓ RTDB Temperature:', value);
-          }
-        },
-        (error) => {
-          console.error('❌ RTDB Temperature error:', error);
-        }
-      );
-
-      // Wind Speed: status/group30/windSpeed
-      const windRef = ref(rtdb, 'status/group30/windSpeed');
-      realtimeRefs.push(windRef);
-      onValue(
-        windRef,
-        (snapshot) => {
-          const value = snapshot.val();
-          if (value !== null && value !== undefined) {
-            setSensorData((prev) => ({ ...prev, windSpeed: Number(value) }));
-            setIsRealtimeConnected(true);
-            console.log('✓ RTDB Wind Speed:', value);
-          }
-        },
-        (error) => {
-          console.error('❌ RTDB Wind Speed error:', error);
-        }
-      );
-
-      // Light Intensity: status/group3/lux
+      // GROUP 3: Light Intensity (lux)
       const luxRef = ref(rtdb, 'status/group3/lux');
       realtimeRefs.push(luxRef);
-      onValue(
-        luxRef,
-        (snapshot) => {
-          const value = snapshot.val();
-          if (value !== null && value !== undefined) {
-            setSensorData((prev) => ({ ...prev, lightIntensity: Number(value) }));
-            setIsRealtimeConnected(true);
-            console.log('✓ RTDB Light Intensity:', value);
-          }
-        },
-        (error) => {
-          console.error('❌ RTDB Light Intensity error:', error);
+      onValue(luxRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setSensorData((prev) => ({ ...prev, lightIntensity: Number(value) }));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Light Intensity:', value);
         }
-      );
+      });
 
-      // Air Humidity: status/group6&35/humidity
-      const humidityRef = ref(rtdb, 'status/group6&35/humidity');
-      realtimeRefs.push(humidityRef);
-      onValue(
-        humidityRef,
-        (snapshot) => {
-          const value = snapshot.val();
-          if (value !== null && value !== undefined) {
-            setSensorData((prev) => ({ ...prev, airHumidity: Number(value) }));
-            setIsRealtimeConnected(true);
-            console.log('✓ RTDB Air Humidity:', value);
-          }
-        },
-        (error) => {
-          console.error('❌ RTDB Air Humidity error:', error);
+      // GROUP 12: Soil Status
+      const soilStatusRef = ref(rtdb, 'status/group12/soilStatus');
+      realtimeRefs.push(soilStatusRef);
+      onValue(soilStatusRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setSoilStatus(String(value));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Soil Status:', value);
         }
-      );
+      });
 
-      // Soil Moisture: status/group12/soilMoisture
+      // GROUP 12: Pump Status
+      const pumpStatusRef = ref(rtdb, 'status/group12/pumpStatus');
+      realtimeRefs.push(pumpStatusRef);
+      onValue(pumpStatusRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setPumpStatus(Number(value));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Pump Status:', value);
+        }
+      });
+
+      // GROUP 12: Soil Moisture
       const soilRef = ref(rtdb, 'status/group12/soilMoisture');
       realtimeRefs.push(soilRef);
-      onValue(
-        soilRef,
-        (snapshot) => {
-          const value = snapshot.val();
-          if (value !== null && value !== undefined) {
-            setSensorData((prev) => ({ ...prev, soilMoisture: Number(value) }));
-            setIsRealtimeConnected(true);
-            console.log('✓ RTDB Soil Moisture:', value);
-          }
-        },
-        (error) => {
-          console.error('❌ RTDB Soil Moisture error:', error);
+      onValue(soilRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setSensorData((prev) => ({ ...prev, soilMoisture: Number(value) }));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Soil Moisture:', value);
         }
-      );
+      });
 
-      // Water Tank: status/group12/waterTank
+      // GROUP 12: Water Tank
       const waterRef = ref(rtdb, 'status/group12/waterTank');
       realtimeRefs.push(waterRef);
-      onValue(
-        waterRef,
-        (snapshot) => {
-          const value = snapshot.val();
-          if (value !== null && value !== undefined) {
-            setSensorData((prev) => ({ ...prev, waterTankLevel: Number(value) }));
-            setIsRealtimeConnected(true);
-            console.log('✓ RTDB Water Tank:', value);
-          }
-        },
-        (error) => {
-          console.error('❌ RTDB Water Tank error:', error);
+      onValue(waterRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setSensorData((prev) => ({ ...prev, waterTankLevel: Number(value) }));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Water Tank:', value);
         }
-      );
+      });
+
+      // GROUP 30: Wind Speed
+      const windRef = ref(rtdb, 'status/group30/windSpeed');
+      realtimeRefs.push(windRef);
+      onValue(windRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setSensorData((prev) => ({ ...prev, windSpeed: Number(value) }));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Wind Speed:', value);
+        }
+      });
+
+      // GROUP 6&35: Temperature
+      const tempRef = ref(rtdb, 'status/group6&35/temperature');
+      realtimeRefs.push(tempRef);
+      onValue(tempRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setSensorData((prev) => ({ ...prev, temperature: Number(value) }));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Temperature:', value);
+        }
+      });
+
+      // GROUP 6&35: Humidity
+      const humidityRef = ref(rtdb, 'status/group6&35/humidity');
+      realtimeRefs.push(humidityRef);
+      onValue(humidityRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setSensorData((prev) => ({ ...prev, airHumidity: Number(value) }));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Air Humidity:', value);
+        }
+      });
+
+      // GROUP 6&35: Heater Status
+      const heaterRef = ref(rtdb, 'status/group6&35/heater');
+      realtimeRefs.push(heaterRef);
+      onValue(heaterRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setHeaterStatus(String(value));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB Heater Status:', value);
+        }
+      });
+
+      // GROUP 6&35: VPD Value
+      const vpdRef = ref(rtdb, 'status/group6&35/vpd');
+      realtimeRefs.push(vpdRef);
+      onValue(vpdRef, (snapshot) => {
+        const value = snapshot.val();
+        if (value !== null && value !== undefined) {
+          setVpdValue(String(value));
+          setIsRealtimeConnected(true);
+          console.log('✓ RTDB VPD:', value);
+        }
+      });
 
       console.log('✓ Firebase Realtime Database listeners initialized');
     } catch (err) {
@@ -264,7 +338,6 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
       setError('Gagal setup Realtime Database');
     }
 
-    // Cleanup: detach all listeners
     return () => {
       realtimeRefs.forEach((dbRef) => {
         off(dbRef);
@@ -273,48 +346,125 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     };
   }, []);
 
-  /**
-   * Realtime listener Group 30 (RPM)
-   */
+  // ============================================================================
+  // FIRESTORE LISTENERS
+  // ============================================================================
+
+  // GROUP 3: Light Intensity History
+  useEffect(() => {
+    let unsubscribe: Unsubscribe | null = null;
+
+    try {
+      const sensorDataRef = collection(db, 'growthChamber', 'group3', 'sensorData');
+      const q = query(sensorDataRef, orderBy('timestamp', 'desc'), limit(20));
+
+      unsubscribe = onSnapshot(q, { includeMetadataChanges: false }, (snapshot) => {
+        const parsedData: LuxDataPoint[] = [];
+        snapshot.forEach((doc) => {
+          const parsed = parseLightData(doc.data());
+          if (parsed) {
+            parsedData.push(parsed);
+          }
+        });
+
+        if (parsedData.length > 0) {
+          const sortedAscending = parsedData.slice().reverse();
+          setLuxHistory(sortedAscending);
+          console.log('✓ Light History updated:', sortedAscending.length, 'entries');
+        }
+      });
+    } catch (err) {
+      console.error('❌ Firestore Light setup error:', err);
+    }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  // GROUP 3: Light Duration (get latest document)
+  useEffect(() => {
+    let unsubscribe: Unsubscribe | null = null;
+
+    try {
+      const sensorDataRef = collection(db, 'growthChamber', 'group3', 'sensorData');
+      const q = query(sensorDataRef, orderBy('timestamp', 'desc'), limit(1));
+
+      unsubscribe = onSnapshot(q, { includeMetadataChanges: false }, (snapshot) => {
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const duration = data.onDuration?.stringValue || data.onDuration || '';
+          setLightDuration(String(duration));
+          console.log('✓ Light Duration:', duration);
+        });
+      });
+    } catch (err) {
+      console.error('❌ Firestore Light Duration setup error:', err);
+    }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  // GROUP 12: Soil Moisture History
+  useEffect(() => {
+    let unsubscribe: Unsubscribe | null = null;
+
+    try {
+      const sensorDataRef = collection(db, 'growthChamber', 'group12', 'sensorData');
+      const q = query(sensorDataRef, orderBy('timestamp', 'desc'), limit(20));
+
+      unsubscribe = onSnapshot(q, { includeMetadataChanges: false }, (snapshot) => {
+        const parsedData: SoilMoistureDataPoint[] = [];
+        snapshot.forEach((doc) => {
+          const parsed = parseSoilMoistureData(doc.data());
+          if (parsed) {
+            parsedData.push(parsed);
+          }
+        });
+
+        if (parsedData.length > 0) {
+          const sortedAscending = parsedData.slice().reverse();
+          setSoilMoistureHistory(sortedAscending);
+          console.log('✓ Soil Moisture History updated:', sortedAscending.length, 'entries');
+        }
+      });
+    } catch (err) {
+      console.error('❌ Firestore Soil Moisture setup error:', err);
+    }
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  // GROUP 30: RPM History
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
 
     try {
       const sensorDataRef = collection(db, 'growthChamber', 'group30', 'sensorData');
+      const q = query(sensorDataRef, orderBy('timestamp', 'desc'), limit(20));
 
-      const q = query(sensorDataRef, orderBy('timestamp', 'desc'), limit(10));
-
-      unsubscribe = onSnapshot(
-        q,
-        { includeMetadataChanges: false },
-        (snapshot) => {
-          if (snapshot.metadata.fromCache) {
-            console.log('⚠️ RPM snapshot from cache (tetap dipakai render)');
+      unsubscribe = onSnapshot(q, { includeMetadataChanges: false }, (snapshot) => {
+        const parsedData: RpmDataPoint[] = [];
+        snapshot.forEach((doc) => {
+          const parsed = parseRpmData(doc.data());
+          if (parsed) {
+            parsedData.push(parsed);
           }
+        });
 
-          const parsedData: RpmDataPoint[] = [];
-          snapshot.forEach((doc) => {
-            const parsed = parseRpmFirestoreData(doc.data());
-            if (parsed) {
-              parsedData.push(parsed);
-            }
-          });
-
-          if (parsedData.length > 0) {
-            const sortedAscending = parsedData.slice().reverse();
-            setRpmHistory(sortedAscending);
-            console.log('✓ Firebase RPM updated:', sortedAscending.length, 'entries');
-            setError(null);
-          }
-
-          setIsLoading(false);
-        },
-        (err) => {
-          console.error('❌ Firestore RPM listener error:', err);
-          setError('Gagal mengambil data RPM realtime');
-          setIsLoading(false);
+        if (parsedData.length > 0) {
+          const sortedAscending = parsedData.slice().reverse();
+          setRpmHistory(sortedAscending);
+          console.log('✓ RPM History updated:', sortedAscending.length, 'entries');
+          setError(null);
         }
-      );
+
+        setIsLoading(false);
+      });
     } catch (err) {
       console.error('❌ Firestore RPM setup error:', err);
       setError('Gagal setup RPM realtime listener');
@@ -322,63 +472,46 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     }
 
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      if (unsubscribe) unsubscribe();
     };
   }, []);
 
-  /**
-   * Realtime listener Group 3 (Light Intensity)
-   */
+  // GROUP 6&35: VPD History
   useEffect(() => {
     let unsubscribe: Unsubscribe | null = null;
 
     try {
-      const sensorDataRef = collection(db, 'growthChamber', 'group3', 'sensorData');
+      const sensorDataRef = collection(db, 'growthChamber', 'group6&35', 'sensorData');
+      const q = query(sensorDataRef, orderBy('timestamp', 'desc'), limit(20));
 
-      const q = query(sensorDataRef, orderBy('timestamp', 'desc'), limit(10));
-
-      unsubscribe = onSnapshot(
-        q,
-        { includeMetadataChanges: false },
-        (snapshot) => {
-          if (snapshot.metadata.fromCache) {
-            console.log('⚠️ Light snapshot from cache (tetap dipakai render)');
+      unsubscribe = onSnapshot(q, { includeMetadataChanges: false }, (snapshot) => {
+        const parsedData: VpdDataPoint[] = [];
+        snapshot.forEach((doc) => {
+          const parsed = parseVpdData(doc.data());
+          if (parsed) {
+            parsedData.push(parsed);
           }
+        });
 
-          const parsedData: LuxDataPoint[] = [];
-          snapshot.forEach((doc) => {
-            const parsed = parseLightFirestoreData(doc.data());
-            if (parsed) {
-              parsedData.push(parsed);
-            }
-          });
-
-          if (parsedData.length > 0) {
-            const sortedAscending = parsedData.slice().reverse();
-            setLuxHistory(sortedAscending);
-            console.log('✓ Firebase Light Intensity updated:', sortedAscending.length, 'entries');
-          }
-        },
-        (err) => {
-          console.error('❌ Firestore Light listener error:', err);
+        if (parsedData.length > 0) {
+          const sortedAscending = parsedData.slice().reverse();
+          setVpdHistory(sortedAscending);
+          console.log('✓ VPD History updated:', sortedAscending.length, 'entries');
         }
-      );
+      });
     } catch (err) {
-      console.error('❌ Firestore Light setup error:', err);
+      console.error('❌ Firestore VPD setup error:', err);
     }
 
     return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      if (unsubscribe) unsubscribe();
     };
   }, []);
 
-  /**
-   * Fetch plant info only (tidak fetch sensor data lagi)
-   */
+  // ============================================================================
+  // PLANT INFO
+  // ============================================================================
+
   const fetchOtherData = async () => {
     try {
       const plant = await plantService.getPlantInfo();
@@ -397,10 +530,21 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
     setIsLoading(false);
   }, []);
 
+  // ============================================================================
+  // CONTEXT VALUE
+  // ============================================================================
+
   const value: DashboardContextType = {
     sensorData,
     luxHistory,
     rpmHistory,
+    soilMoistureHistory,
+    vpdHistory,
+    lightDuration,
+    soilStatus,
+    pumpStatus,
+    heaterStatus,
+    vpdValue,
     plantInfo,
     isLoading,
     error,
@@ -411,7 +555,6 @@ export const DashboardProvider: React.FC<DashboardProviderProps> = ({ children }
   return <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>;
 };
 
-// Export hook after provider to fix Fast Refresh
 export const useDashboard = () => {
   const context = useContext(DashboardContext);
   if (!context) {

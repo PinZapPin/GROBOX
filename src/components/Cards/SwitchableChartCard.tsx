@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { RpmDataPoint, LuxDataPoint } from '../../services/dummyData';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { RpmDataPoint, LuxDataPoint, SoilMoistureDataPoint, VpdDataPoint } from '../../services/dummyData';
 import images from '../../assets/images';
 import './SwitchableChartCard.css';
 
 interface SwitchableChartCardProps {
   rpmData: RpmDataPoint[];
   luxData: LuxDataPoint[];
-  soilMoistureData?: any[]; // Placeholder for future soil moisture data
+  soilMoistureData: SoilMoistureDataPoint[];
+  vpdData: VpdDataPoint[];
   isConnected?: boolean;
 }
 
-type ChartView = 'rpm' | 'lux' | 'soilMoisture';
+type ChartView = 'rpm' | 'lux' | 'soilMoisture' | 'vpd';
 
 const SwitchableChartCard: React.FC<SwitchableChartCardProps> = ({ 
   rpmData, 
   luxData, 
-  soilMoistureData = [],
+  soilMoistureData,
+  vpdData,
   isConnected = false 
 }) => {
   const [currentView, setCurrentView] = useState<ChartView>('rpm');
@@ -24,13 +26,15 @@ const SwitchableChartCard: React.FC<SwitchableChartCardProps> = ({
   const switchViewNext = () => {
     if (currentView === 'rpm') setCurrentView('lux');
     else if (currentView === 'lux') setCurrentView('soilMoisture');
+    else if (currentView === 'soilMoisture') setCurrentView('vpd');
     else setCurrentView('rpm');
   };
 
   const switchViewPrev = () => {
-    if (currentView === 'rpm') setCurrentView('soilMoisture');
+    if (currentView === 'rpm') setCurrentView('vpd');
     else if (currentView === 'lux') setCurrentView('rpm');
-    else setCurrentView('lux');
+    else if (currentView === 'soilMoisture') setCurrentView('lux');
+    else setCurrentView('soilMoisture');
   };
 
   const getChartTitle = () => {
@@ -38,6 +42,7 @@ const SwitchableChartCard: React.FC<SwitchableChartCardProps> = ({
       case 'rpm': return 'Fan RPM History';
       case 'lux': return 'Light Intensity History';
       case 'soilMoisture': return 'Soil Moisture History';
+      case 'vpd': return 'VPD History';
     }
   };
 
@@ -46,6 +51,7 @@ const SwitchableChartCard: React.FC<SwitchableChartCardProps> = ({
       case 'rpm': return images.frame.fanIcon;
       case 'lux': return images.frame.lightIcon;
       case 'soilMoisture': return images.frame.soilmoistureIcon;
+      case 'vpd': return images.frame.vpdIcon;
     }
   };
 
@@ -54,6 +60,7 @@ const SwitchableChartCard: React.FC<SwitchableChartCardProps> = ({
       case 'rpm': return rpmData;
       case 'lux': return luxData;
       case 'soilMoisture': return soilMoistureData;
+      case 'vpd': return vpdData;
     }
   };
 
@@ -71,15 +78,26 @@ const SwitchableChartCard: React.FC<SwitchableChartCardProps> = ({
     if (currentView === 'rpm') {
       return (
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={rpmData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+          <LineChart data={rpmData} margin={{ top: 5, right: 20, left: 50, bottom: 50 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.5} />
-            <XAxis dataKey="time" stroke="#7f8c8d" style={{ fontSize: '12px', fontFamily: 'Poppins' }} />
-            <YAxis stroke="#7f8c8d" style={{ fontSize: '12px', fontFamily: 'Poppins' }} width={50} />
+            <XAxis 
+              dataKey="time" 
+              stroke="#7f8c8d" 
+              style={{ fontSize: '10px', fontFamily: 'Poppins' }}
+              label={{ value: 'Time', position: 'insideBottom', offset: -15, style: { fontSize: '12px' } }}
+            />
+            <YAxis 
+              stroke="#7f8c8d" 
+              style={{ fontSize: '12px', fontFamily: 'Poppins' }} 
+              width={50}
+              label={{ value: 'RPM', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }}
+            />
             <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '8px', fontFamily: 'Poppins' }} />
-            <Line type="monotone" dataKey="fan1" stroke="#e74c3c" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
-            <Line type="monotone" dataKey="fan2" stroke="#3498db" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
-            <Line type="monotone" dataKey="fan3" stroke="#2ecc71" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
-            <Line type="monotone" dataKey="fan4" stroke="#f39c12" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
+            <Legend wrapperStyle={{ fontSize: '12px', fontFamily: 'Poppins', paddingTop: '10px' }} verticalAlign="bottom" />
+            <Line type="monotone" dataKey="fan1" name="Fan 1" stroke="#e74c3c" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
+            <Line type="monotone" dataKey="fan2" name="Fan 2" stroke="#3498db" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
+            <Line type="monotone" dataKey="fan3" name="Fan 3" stroke="#2ecc71" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
+            <Line type="monotone" dataKey="fan4" name="Fan 4" stroke="#f39c12" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
           </LineChart>
         </ResponsiveContainer>
       );
@@ -88,26 +106,73 @@ const SwitchableChartCard: React.FC<SwitchableChartCardProps> = ({
     if (currentView === 'lux') {
       return (
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={luxData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+          <LineChart data={luxData} margin={{ top: 5, right: 20, left: 50, bottom: 50 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.5} />
-            <XAxis dataKey="time" stroke="#7f8c8d" style={{ fontSize: '12px', fontFamily: 'Poppins' }} />
-            <YAxis stroke="#7f8c8d" style={{ fontSize: '12px', fontFamily: 'Poppins' }} width={50} />
+            <XAxis 
+              dataKey="time" 
+              stroke="#7f8c8d" 
+              style={{ fontSize: '10px', fontFamily: 'Poppins' }}
+              label={{ value: 'Time', position: 'insideBottom', offset: -15, style: { fontSize: '12px' } }}
+            />
+            <YAxis 
+              stroke="#7f8c8d" 
+              style={{ fontSize: '12px', fontFamily: 'Poppins' }} 
+              width={50}
+              label={{ value: 'Light Intensity (Lux)', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }}
+            />
             <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '8px', fontFamily: 'Poppins' }} />
-            <Line type="monotone" dataKey="value" stroke="#f39c12" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
+            <Legend wrapperStyle={{ fontSize: '12px', fontFamily: 'Poppins', paddingTop: '10px' }} verticalAlign="bottom" />
+            <Line type="monotone" dataKey="lux" name="Lux" stroke="#ffd54f" strokeWidth={3} dot={false} isAnimationActive={true} animationDuration={1500} />
           </LineChart>
         </ResponsiveContainer>
       );
     }
 
-    // Soil Moisture - placeholder
+    if (currentView === 'soilMoisture') {
+      return (
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={soilMoistureData} margin={{ top: 5, right: 20, left: 50, bottom: 50 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.5} />
+            <XAxis 
+              dataKey="time" 
+              stroke="#7f8c8d" 
+              style={{ fontSize: '8px', fontFamily: 'Poppins' }}
+              label={{ value: 'Time', position: 'insideBottom', offset: -15, style: { fontSize: '12px' } }}
+            />
+            <YAxis 
+              stroke="#7f8c8d" 
+              style={{ fontSize: '12px', fontFamily: 'Poppins' }} 
+              width={50}
+              label={{ value: 'Soil Moisture (%)', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }}
+            />
+            <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '8px', fontFamily: 'Poppins' }} />
+            <Legend wrapperStyle={{ fontSize: '12px', fontFamily: 'Poppins', paddingTop: '10px' }} verticalAlign="bottom" />
+            <Line type="monotone" dataKey="soilMoisture" name="Soil Moisture" stroke="#27ae60" strokeWidth={3} dot={false} isAnimationActive={true} animationDuration={1500} />
+          </LineChart>
+        </ResponsiveContainer>
+      );
+    }
+
+    // VPD
     return (
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={soilMoistureData} margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
+        <LineChart data={vpdData} margin={{ top: 5, right: 20, left: 50, bottom: 50 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.5} />
-          <XAxis dataKey="time" stroke="#7f8c8d" style={{ fontSize: '12px', fontFamily: 'Poppins' }} />
-          <YAxis stroke="#7f8c8d" style={{ fontSize: '12px', fontFamily: 'Poppins' }} width={50} />
+          <XAxis 
+            dataKey="time" 
+            stroke="#7f8c8d" 
+            style={{ fontSize: '10px', fontFamily: 'Poppins' }}
+            label={{ value: 'Time', position: 'insideBottom', offset: -15, style: { fontSize: '12px' } }}
+          />
+          <YAxis 
+            stroke="#7f8c8d" 
+            style={{ fontSize: '12px', fontFamily: 'Poppins' }} 
+            width={50}
+            label={{ value: 'VPD (kPa)', angle: -90, position: 'insideLeft', style: { fontSize: '12px' } }}
+          />
           <Tooltip contentStyle={{ backgroundColor: '#fff', border: '1px solid #e0e0e0', borderRadius: '8px', fontFamily: 'Poppins' }} />
-          <Line type="monotone" dataKey="value" stroke="#8b4513" strokeWidth={2} dot={false} isAnimationActive={true} animationDuration={1500} />
+          <Legend wrapperStyle={{ fontSize: '12px', fontFamily: 'Poppins', paddingTop: '10px' }} verticalAlign="bottom" />
+          <Line type="monotone" dataKey="vpd" name="VPD" stroke="#e67e22" strokeWidth={3} dot={false} isAnimationActive={true} animationDuration={1500} />
         </LineChart>
       </ResponsiveContainer>
     );

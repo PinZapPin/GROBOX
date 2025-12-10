@@ -10,7 +10,6 @@ interface LuxHistoryChartProps {
 }
 
 const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data, isConnected = true }) => {
-  const [enableAnimation, setEnableAnimation] = useState(true);
   const [chartKey, setChartKey] = useState(0);
 
   /**
@@ -18,7 +17,6 @@ const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data, isConnected = t
    */
   useEffect(() => {
     if (data.length > 0) {
-      setEnableAnimation(true);
       setChartKey(prev => prev + 1);
     }
   }, [data]);
@@ -32,7 +30,6 @@ const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data, isConnected = t
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        setEnableAnimation(true);
         setChartKey(prev => prev + 1);
       }, 300);
     };
@@ -65,48 +62,41 @@ const LuxHistoryChart: React.FC<LuxHistoryChartProps> = ({ data, isConnected = t
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-          <LineChart 
-            key={chartKey}
-            data={data} 
-            margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.5} />
-            <XAxis 
-              dataKey="time" 
-              stroke="#7f8c8d"
-              style={{ fontSize: '12px', fontFamily: 'Poppins' }}
-            />
-            <YAxis 
-              stroke="#7f8c8d"
-              style={{ fontSize: '12px', fontFamily: 'Poppins' }}
-              width={50}
-            />
-            <Tooltip 
-              contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e0e0e0',
-                borderRadius: '8px',
-                fontFamily: 'Poppins',
-              }}
-            />
-            <Line 
-              type="monotone" 
-              dataKey="lux" 
-              stroke="#ffd54f" 
-              strokeWidth={3}
-              dot={false}
-              isAnimationActive={enableAnimation}
-              animationDuration={1500}
-              animationEasing="ease-out"
-            />
-          </LineChart>
-        </ResponsiveContainer>
+            <LineChart 
+              key={chartKey}
+              data={data} 
+              margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" opacity={0.5} />
+              <XAxis 
+                dataKey="time" 
+                stroke="#7f8c8d"
+                style={{ fontSize: '12px', fontFamily: 'Poppins' }}
+              />
+              <YAxis 
+                stroke="#7f8c8d"
+                style={{ fontSize: '12px', fontFamily: 'Poppins' }}
+                width={50}
+              />
+              <Tooltip 
+                contentStyle={{
+                  backgroundColor: '#fff',
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '8px',
+                  fontFamily: 'Poppins',
+                }}
+              />
+              <Line 
+                type="monotone" 
+                dataKey="lux" 
+                stroke="#ffd54f" 
+                strokeWidth={3}
+                dot={false}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
         )}
-      </div>
-    </div>
-  );
-};        </LineChart>
-        </ResponsiveContainer>
       </div>
     </div>
   );

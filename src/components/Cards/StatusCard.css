@@ -51,8 +51,26 @@
   font-weight: 500;
 }
 
+.status-text-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+}
+
+.duration-text {
+  font-size: 32px;
+  font-weight: 600;
+  color: #2c3e50;
+  letter-spacing: 0.5px;
+}
+
 @media (max-width: 768px) {
   .status-value {
     font-size: 36px;
+  }
+  
+  .duration-text {
+    font-size: 24px;
   }
 }

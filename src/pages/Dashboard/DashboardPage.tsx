@@ -10,6 +10,7 @@ import WaterTankCard from '../../components/Cards/WaterTankCard';
 import LightIntensityCard from '../../components/Cards/LightIntensityCard';
 import StatusCard from '../../components/Cards/StatusCard';
 import SoilStatusCard from '../../components/Cards/SoilStatusCard';
+import LightDurationCard from '../../components/Cards/LightDurationCard';
 import VpdCard from '../../components/Cards/VpdCard';
 import VpdStatusCard from '../../components/Cards/VpdStatusCard';
 import SwitchableChartCard from '../../components/Cards/SwitchableChartCard';
@@ -17,13 +18,22 @@ import AiChatButton from '../../components/AiChat/AiChatButton';
 import './DashboardPage.css';
 
 const DashboardPage: React.FC = () => {
-  const { sensorData, luxHistory, rpmHistory, plantInfo, isLoading, error, isRealtimeConnected } = useDashboard();
-
-  // Dummy states for new components - to be wired to Firebase later
-  const [pumpStatus] = React.useState<'ON' | 'OFF'>('OFF');
-  const [fanHeaterStatus] = React.useState<'ON' | 'OFF'>('OFF');
-  const [vpdValue] = React.useState<number | null>(null); // Placeholder for VPD calculation
-  const [soilStatusText] = React.useState<string>(''); // Placeholder for soil status from Firebase
+  const { 
+    sensorData, 
+    luxHistory, 
+    rpmHistory, 
+    soilMoistureHistory,
+    vpdHistory,
+    lightDuration,
+    soilStatus,
+    pumpStatus,
+    heaterStatus,
+    vpdValue,
+    plantInfo, 
+    isLoading, 
+    error, 
+    isRealtimeConnected 
+  } = useDashboard();
 
   if (isLoading && !sensorData) {
     return (
@@ -48,9 +58,10 @@ const DashboardPage: React.FC = () => {
         {/* Left Section - 1/3 */}
         <div className="left-section">
           <PlantInfo plantInfo={plantInfo} />
-          <SoilStatusCard statusText={soilStatusText} isConnected={isRealtimeConnected} />
-          <StatusCard title="Pump Status" status={pumpStatus} isConnected={isRealtimeConnected} />
-          <StatusCard title="Fan Heater Status" status={fanHeaterStatus} isConnected={isRealtimeConnected} />
+          <SoilStatusCard statusText={soilStatus} isConnected={isRealtimeConnected} />
+          <LightDurationCard duration={lightDuration} isConnected={isRealtimeConnected} />
+          <StatusCard title="Reservoir Pump Status" status={pumpStatus === 1 ? 'ON' : 'OFF'} isConnected={isRealtimeConnected} />
+          <StatusCard title="Fan Heater Status" status={heaterStatus} isConnected={isRealtimeConnected} />
         </div>
 
         {/* Right Section - 2/3 */}
@@ -76,6 +87,8 @@ const DashboardPage: React.FC = () => {
             <SwitchableChartCard 
               rpmData={rpmHistory}
               luxData={luxHistory}
+              soilMoistureData={soilMoistureHistory}
+              vpdData={vpdHistory}
               isConnected={isRealtimeConnected}
             />
           </div>
